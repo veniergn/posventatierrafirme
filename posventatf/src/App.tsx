@@ -6,7 +6,8 @@ import {
   MediaUploadItem, 
   AuditLog, 
   UnitDetail,
-  ActiveAppView 
+  ActiveAppView,
+  ContactItem
 } from './types';
 import { 
   INITIAL_USERS, 
@@ -14,7 +15,8 @@ import {
   INITIAL_MILESTONES, 
   INITIAL_UPLOADS, 
   INITIAL_AUDIT_LOGS,
-  INITIAL_UNITS
+  INITIAL_UNITS,
+  INITIAL_CONTACTS
 } from './data/initialData';
 import { api } from './lib/api';
 import { PrototypeBar } from './components/PrototypeBar';
@@ -25,6 +27,7 @@ import { NewUserModal } from './components/AdminPanel/NewUserModal';
 import { EditUserModal } from './components/AdminPanel/EditUserModal';
 import { ProjectsDashboard } from './components/AdminPanel/ProjectsDashboard';
 import { MultimediaManager } from './components/AdminPanel/MultimediaManager';
+import { ContactsManagement } from './components/AdminPanel/ContactsManagement';
 import { AuditLogsModal } from './components/AdminPanel/AuditLogsModal';
 import { PreviewModeView } from './components/PreviewMode/PreviewModeView';
 import { OwnerApp } from './components/OwnerPortal/OwnerApp';
@@ -42,6 +45,7 @@ export default function App() {
   const [milestones, setMilestones] = useState<ConstructionMilestone[]>(INITIAL_MILESTONES);
   const [uploads, setUploads] = useState<MediaUploadItem[]>(INITIAL_UPLOADS);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(INITIAL_AUDIT_LOGS);
+  const [contacts, setContacts] = useState<ContactItem[]>(INITIAL_CONTACTS);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
   // Fetch from Supabase on mount
@@ -359,6 +363,15 @@ export default function App() {
                 currentStaffRole={currentStaffUser.staffRole || 'Staff'}
               />
             )}
+
+            {currentView === 'admin_contacts' && (
+              <ContactsManagement
+                contacts={contacts}
+                onAddContact={(c) => setContacts([c, ...contacts])}
+                onUpdateContact={(c) => setContacts(contacts.map(x => x.id === c.id ? c : x))}
+                onDeleteContact={(id) => setContacts(contacts.filter(x => x.id !== id))}
+              />
+            )}
           </AdminLayout>
         )}
 
@@ -385,6 +398,7 @@ export default function App() {
               user={selectedUserForPreview}
               projects={projects}
               milestones={milestones}
+              contacts={contacts}
               isEmbeddedInSimulator={false}
               onAdminAccess={() => setCurrentView('admin_users')}
               onLoginSuccess={(u) => setSelectedUserForPreview(u)}

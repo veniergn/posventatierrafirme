@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
-import { User, Project } from '../../types';
+import { User, Project, ContactItem } from '../../types';
 import { 
   UserCheck, 
   Phone, 
   Mail, 
   MessageSquare, 
-  Building2, 
   MapPin, 
   Clock, 
   Send, 
   CheckCircle2, 
-  Sparkles,
-  ShieldCheck
+  PhoneCall
 } from 'lucide-react';
+import { BrandLogo } from '../BrandLogo';
 
 interface OwnerContactProps {
   user: User | null;
   projects: Project[];
+  contacts: ContactItem[];
 }
 
-export const OwnerContact: React.FC<OwnerContactProps> = ({ user, projects }) => {
+export const OwnerContact: React.FC<OwnerContactProps> = ({ user, projects, contacts = [] }) => {
   const [ticketSubject, setTicketSubject] = useState('Consulta Técnica de Obra');
   const [ticketMessage, setTicketMessage] = useState('');
   const [isSent, setIsSent] = useState(false);
@@ -30,6 +30,37 @@ export const OwnerContact: React.FC<OwnerContactProps> = ({ user, projects }) =>
     setIsSent(true);
   };
 
+  const tfContacts = contacts.filter(c => c.category === 'Tierra Firme');
+  const fownContacts = contacts.filter(c => c.category === 'FOWN Propiedades');
+
+  const getActionHref = (contact: ContactItem) => {
+    const cleanPhone = contact.phone.replace(/[^0-9]/g, '');
+    switch (contact.preferredChannel) {
+      case 'whatsapp': return `https://api.whatsapp.com/send?phone=${cleanPhone}&text=Hola,%20me%20comunico%20desde%20el%20portal%20Tierra%20Firme.`;
+      case 'email': return `mailto:${contact.email}`;
+      case 'call': return `tel:+${cleanPhone}`;
+      default: return `tel:+${cleanPhone}`;
+    }
+  };
+
+  const getChannelIcon = (channel: string) => {
+    switch (channel) {
+      case 'whatsapp': return <MessageSquare className="w-4 h-4" />;
+      case 'email': return <Mail className="w-4 h-4" />;
+      case 'call': return <PhoneCall className="w-4 h-4" />;
+      default: return <MessageSquare className="w-4 h-4" />;
+    }
+  };
+
+  const getChannelLabel = (channel: string) => {
+    switch (channel) {
+      case 'whatsapp': return 'Enviar Mensaje';
+      case 'email': return 'Enviar Correo';
+      case 'call': return 'Llamar Ahora';
+      default: return 'Contactar';
+    }
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header */}
@@ -38,161 +69,98 @@ export const OwnerContact: React.FC<OwnerContactProps> = ({ user, projects }) =>
           <UserCheck className="w-4 h-4" /> Centro de Atención
         </span>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1B1C1E] tracking-tight mt-0.5">
-          Canales de Contacto Directo
+          Canales de Contacto
         </h1>
         <p className="text-xs text-[#5B5F63] mt-1">
-          Estamos a tu disposición para consultas de avance de obra, administración de cuotas y asesoramiento comercial.
+          Estamos a tu disposición para consultas técnicas, administrativas y asesoramiento comercial.
         </p>
       </div>
 
-      {/* Directory Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Post-Venta / Obra */}
-        <div className="bg-white rounded-2xl p-5 border border-[#E0E3E7] shadow-xs space-y-4 flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-[#8E1E19] text-white flex items-center justify-center">
-              <Building2 className="w-5 h-5" />
-            </div>
-            <h3 className="font-bold text-sm text-[#1B1C1E]">
-              Dirección de Obra & Postventa
-            </h3>
-            <p className="text-xs text-[#5B5F63]">
-              Consultas sobre especificaciones, visitas presenciales y avances constructivos.
-            </p>
+      {/* Two Column Layout for Contacts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        {/* Column 1: Tierra Firme */}
+        <div className="bg-white rounded-2xl border border-[#E0E3E7] shadow-sm overflow-hidden flex flex-col">
+          <div className="p-6 border-b border-[#E0E3E7] flex justify-center bg-gray-50/50">
+            <BrandLogo variant="horizontal" size="md" />
           </div>
-
-          <div className="space-y-2 pt-2 border-t border-[#E0E3E7]">
-            <a
-              href="https://api.whatsapp.com/send?phone=5491149203344&text=Hola,%20quisiera%20coordinar%20una%20visita%20de%20obra."
-              target="_blank"
-              rel="noreferrer"
-              className="w-full py-2 px-3 bg-[#25D366]/10 text-[#075E54] hover:bg-[#25D366] hover:text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors"
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span>WhatsApp Obra</span>
-            </a>
-            <a
-              href="mailto:obra@tierrafirme.com"
-              className="w-full py-2 px-3 bg-[#FAF9FB] text-[#5B5F63] hover:bg-gray-100 font-bold text-xs rounded-xl flex items-center justify-center gap-2 border border-[#E0E3E7] transition-colors"
-            >
-              <Mail className="w-4 h-4" />
-              <span>obra@tierrafirme.com</span>
-            </a>
+          <div className="p-6 space-y-4 flex-1">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[#1B1C1E] mb-4">Post-Venta & Administración</h2>
+            <div className="space-y-4">
+              {tfContacts.map((contact) => (
+                <div key={contact.id} className="p-4 rounded-xl border border-[#E0E3E7] bg-white flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="font-bold text-sm text-[#1B1C1E]">{contact.name}</h3>
+                    <p className="text-xs text-[#5B5F63] font-medium">{contact.role}</p>
+                    <div className="mt-2 text-xs text-[#1B1C1E] font-semibold">{contact.phone}</div>
+                    {contact.email && <div className="text-xs text-[#5B5F63]">{contact.email}</div>}
+                  </div>
+                  <a
+                    href={getActionHref(contact)}
+                    target={contact.preferredChannel === 'whatsapp' ? '_blank' : '_self'}
+                    rel="noreferrer"
+                    className="shrink-0 py-2 px-4 bg-[#8E1E19] text-white hover:bg-[#6D0205] font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors"
+                  >
+                    {getChannelIcon(contact.preferredChannel)}
+                    <span>{getChannelLabel(contact.preferredChannel)}</span>
+                  </a>
+                </div>
+              ))}
+              {tfContacts.length === 0 && (
+                <p className="text-xs text-gray-500 text-center py-4">No hay contactos configurados.</p>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Administración & Cobranzas */}
-        <div className="bg-white rounded-2xl p-5 border border-[#E0E3E7] shadow-xs space-y-4 flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-[#1B1C1E] text-white flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <h3 className="font-bold text-sm text-[#1B1C1E]">
-              Administración & Finanzas
-            </h3>
-            <p className="text-xs text-[#5B5F63]">
-              Estado de cuenta, comprobantes de pago de cuotas y facturación.
-            </p>
+        {/* Column 2: FOWN Propiedades */}
+        <div className="bg-[#094262] rounded-2xl border border-[#094262] shadow-sm overflow-hidden flex flex-col relative">
+          {/* Subtle background glow/pattern */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#FC94C1 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+          
+          <div className="p-6 border-b border-white/10 flex justify-center relative z-10">
+            <img src="/fown-logo.jpg" alt="FOWN Propiedades" className="h-12 object-contain rounded-md" />
           </div>
-
-          <div className="space-y-2 pt-2 border-t border-[#E0E3E7]">
-            <a
-              href="https://api.whatsapp.com/send?phone=5491149203344&text=Hola,%20consulto%20por%20mi%20estado%20de%20cuenta."
-              target="_blank"
-              rel="noreferrer"
-              className="w-full py-2 px-3 bg-[#25D366]/10 text-[#075E54] hover:bg-[#25D366] hover:text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors"
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span>WhatsApp Pagos</span>
-            </a>
-            <a
-              href="mailto:administracion@tierrafirme.com"
-              className="w-full py-2 px-3 bg-[#FAF9FB] text-[#5B5F63] hover:bg-gray-100 font-bold text-xs rounded-xl flex items-center justify-center gap-2 border border-[#E0E3E7] transition-colors"
-            >
-              <Mail className="w-4 h-4" />
-              <span>admin@tierrafirme.com</span>
-            </a>
+          <div className="p-6 space-y-4 flex-1 relative z-10">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[#FC94C1] mb-4">Asesoría Comercial & Ventas</h2>
+            <div className="space-y-4">
+              {fownContacts.map((contact) => (
+                <div key={contact.id} className="p-4 rounded-xl border border-white/10 bg-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-sm">
+                  <div>
+                    <h3 className="font-bold text-sm text-white">{contact.name}</h3>
+                    <p className="text-xs text-[#FC94C1]/80 font-medium">{contact.role}</p>
+                    <div className="mt-2 text-xs text-white font-semibold">{contact.phone}</div>
+                    {contact.email && <div className="text-xs text-gray-300">{contact.email}</div>}
+                  </div>
+                  <a
+                    href={getActionHref(contact)}
+                    target={contact.preferredChannel === 'whatsapp' ? '_blank' : '_self'}
+                    rel="noreferrer"
+                    className="shrink-0 py-2 px-4 bg-[#FC94C1] text-[#094262] hover:bg-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors"
+                  >
+                    {getChannelIcon(contact.preferredChannel)}
+                    <span>{getChannelLabel(contact.preferredChannel)}</span>
+                  </a>
+                </div>
+              ))}
+              {fownContacts.length === 0 && (
+                <p className="text-xs text-white/50 text-center py-4">No hay contactos comerciales configurados.</p>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Asesoría Comercial / Nuevas Unidades */}
-        <div className="bg-white rounded-2xl p-5 border border-[#E0E3E7] shadow-xs space-y-4 flex flex-col justify-between">
-          <div className="space-y-2">
-            <div className="w-10 h-10 rounded-xl bg-[#FFDAD5] text-[#8A1B17] flex items-center justify-center">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <h3 className="font-bold text-sm text-[#1B1C1E]">
-              Asesoría Comercial VIP
-            </h3>
-            <p className="text-xs text-[#5B5F63]">
-              Oportunidades de reinversión, preventa exclusiva y programa de referidos.
-            </p>
-          </div>
-
-          <div className="space-y-2 pt-2 border-t border-[#E0E3E7]">
-            <a
-              href="https://api.whatsapp.com/send?phone=5491149203344&text=Hola,%20soy%20propietario%20y%20quiero%20conocer%20nuevos%20proyectos."
-              target="_blank"
-              rel="noreferrer"
-              className="w-full py-2 px-3 bg-[#25D366]/10 text-[#075E54] hover:bg-[#25D366] hover:text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors"
-            >
-              <MessageSquare className="w-4 h-4" />
-              <span>WhatsApp Ventas</span>
-            </a>
-            <a
-              href="tel:+5491149203344"
-              className="w-full py-2 px-3 bg-[#FAF9FB] text-[#5B5F63] hover:bg-gray-100 font-bold text-xs rounded-xl flex items-center justify-center gap-2 border border-[#E0E3E7] transition-colors"
-            >
-              <Phone className="w-4 h-4" />
-              <span>+54 9 11 4920-3344</span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Showroom & Corporate Office */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E0E3E7] shadow-xs space-y-4">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-[#1B1C1E]">
-          Sede Central & Showroom
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div className="space-y-2 p-4 bg-[#FAF9FB] rounded-xl border border-[#E0E3E7]">
-            <div className="flex items-center gap-2 text-[#8E1E19] font-bold">
-              <MapPin className="w-4 h-4" />
-              <span>Oficinas Centrales & Showroom Experiencia</span>
-            </div>
-            <p className="text-[#1B1C1E] font-semibold">
-              Av. del Libertador 4800, Piso 14, Buenos Aires
-            </p>
-            <p className="text-[#5B5F63] flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5" /> Lunes a Viernes de 09:00 a 19:00 hs | Sábados de 10:00 a 14:00 hs
-            </p>
-          </div>
-
-          <div className="space-y-2 p-4 bg-[#FAF9FB] rounded-xl border border-[#E0E3E7]">
-            <div className="flex items-center gap-2 text-[#8E1E19] font-bold">
-              <Phone className="w-4 h-4" />
-              <span>Línea Telefónica Rotativa</span>
-            </div>
-            <p className="text-[#1B1C1E] font-semibold">
-              +54 11 5263-8800 (Conmutador Central)
-            </p>
-            <p className="text-[#5B5F63]">
-              Atención personalizada con tu número de DNI o código de propietario.
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Support Ticket Submission Form - Only for logged in owners */}
       {user && (
-        <div className="bg-white rounded-2xl p-6 border border-[#E0E3E7] shadow-xs space-y-4">
+        <div className="bg-white rounded-2xl p-6 border border-[#E0E3E7] shadow-xs space-y-4 mt-8">
           <h3 className="text-sm font-bold uppercase tracking-wider text-[#1B1C1E]">
             Enviar Consulta Formal al Equipo
           </h3>
 
           {isSent ? (
-            <div className="text-center py-6 space-y-2">
+            <div className="text-center py-6 space-y-2 animate-in fade-in zoom-in">
               <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-6 h-6" />
               </div>

@@ -11,7 +11,8 @@ import {
   Building2, 
   Bell, 
   Search,
-  ExternalLink
+  ExternalLink,
+  Phone
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -91,6 +92,18 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             >
               <UploadCloud className="w-4 h-4" />
               <span>Multimedia & Avances</span>
+            </button>
+
+            <button
+              onClick={() => onNavigate('admin_contacts')}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                currentView === 'admin_contacts'
+                  ? 'bg-[#8E1E19] text-white shadow-xs'
+                  : 'text-[#5B5F63] hover:text-[#1B1C1E] hover:bg-[#FAF9FB]'
+              }`}
+            >
+              <Phone className="w-4 h-4" />
+              <span>Gestión de Contactos</span>
             </button>
 
             <div className="pt-4 px-3 py-1.5 text-[10px] font-bold text-[#5B5F63] uppercase tracking-wider">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Project, ConstructionMilestone } from '../../types';
+import { User, Project, ConstructionMilestone, ContactItem } from '../../types';
 import { INITIAL_PROJECTS } from '../../data/initialData';
 import { OwnerHome } from './OwnerHome';
 import { OwnerMyUnit } from './OwnerMyUnit';
@@ -19,6 +19,7 @@ interface OwnerAppProps {
   user: User | null;
   projects?: Project[];
   milestones: ConstructionMilestone[];
+  contacts?: ContactItem[];
   isEmbeddedInSimulator?: boolean;
   onAdminAccess?: () => void;
   onLoginSuccess?: (user: User) => void;
@@ -29,6 +30,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
   user,
   projects = INITIAL_PROJECTS,
   milestones,
+  contacts,
   isEmbeddedInSimulator = false,
   onAdminAccess,
   onLoginSuccess,
@@ -133,6 +135,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
               <OwnerContact
                 user={user}
                 projects={projects}
+                contacts={contacts || []}
               />
             )}
           </>

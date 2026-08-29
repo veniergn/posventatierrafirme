@@ -1,4 +1,4 @@
-import { User, Project, ConstructionMilestone, UnitDetail, MediaUploadItem, AuditLog } from '../types';
+import { User, Project, ConstructionMilestone, UnitDetail, MediaUploadItem, AuditLog, ContactItem } from '../types';
 
 export const INITIAL_USERS: User[] = [
   {
@@ -709,6 +709,35 @@ export const INITIAL_AUDIT_LOGS: AuditLog[] = [
     staffName: 'Arq. Mariana Rossi',
     staffRole: 'Arquitecto',
     timestamp: '14 Octubre 2023, 14:30 PM',
-    entityType: 'media'
+  }
+];
+
+export const INITIAL_CONTACTS: ContactItem[] = [
+  {
+    id: 'c-1',
+    name: 'Ing. Roberto Sánchez',
+    role: 'Director de Obra',
+    phone: '+54 9 11 3344-5566',
+    email: 'obras@tierrafirme.com',
+    category: 'Tierra Firme',
+    preferredChannel: 'whatsapp'
+  },
+  {
+    id: 'c-2',
+    name: 'Laura Martinez',
+    role: 'Administración y Finanzas',
+    phone: '+54 9 11 6789-0123',
+    email: 'admin@tierrafirme.com',
+    category: 'Tierra Firme',
+    preferredChannel: 'whatsapp'
+  },
+  {
+    id: 'c-3',
+    name: 'Asesoría Comercial VIP',
+    role: 'Ventas y Atención al Cliente',
+    phone: '+54 9 11 1234-5678',
+    email: 'ventas@fownpropiedades.com',
+    category: 'FOWN Propiedades',
+    preferredChannel: 'whatsapp'
   }
 ];

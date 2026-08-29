@@ -153,12 +153,23 @@ export interface AuditLog {
   entityType: 'user' | 'media' | 'project' | 'token' | 'unit';
 }
 
+export interface ContactItem {
+  id: string;
+  name: string;
+  role: string;
+  phone: string;
+  email: string;
+  category: 'Tierra Firme' | 'FOWN Propiedades';
+  preferredChannel: 'whatsapp' | 'email' | 'call';
+}
+
 export type ActiveAppView = 
   | 'splash_screen'
   | 'admin_users' 
   | 'admin_dashboard' 
   | 'admin_units'
   | 'admin_multimedia' 
+  | 'admin_contacts'
   | 'preview_mode' 
   | 'owner_portal' 
   | 'owner_login' 
