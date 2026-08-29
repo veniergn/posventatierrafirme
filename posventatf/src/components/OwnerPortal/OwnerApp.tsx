@@ -22,6 +22,7 @@ interface OwnerAppProps {
   isEmbeddedInSimulator?: boolean;
   onAdminAccess?: () => void;
   onLoginSuccess?: (user: User) => void;
+  onNavigateToActivation?: () => void;
 }
 
 export const OwnerApp: React.FC<OwnerAppProps> = ({
@@ -30,7 +31,8 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
   milestones,
   isEmbeddedInSimulator = false,
   onAdminAccess,
-  onLoginSuccess
+  onLoginSuccess,
+  onNavigateToActivation
 }) => {
   const [activeTab, setActiveTab] = useState<'inicio' | 'unidad' | 'desarrollos' | 'contacto'>('inicio');
   const [selectedProjectForDetail, setSelectedProjectForDetail] = useState<Project | null>(null);
@@ -107,7 +109,9 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
                 <OwnerPublicLogin 
                   onLoginSuccess={(u) => {
                     if (onLoginSuccess) onLoginSuccess(u);
-                  }} 
+                  }}
+                  onNavigateToActivation={onNavigateToActivation}
+                  onQuickLoginAsAdmin={onAdminAccess}
                 />
               ) : (
                 <OwnerMyUnit

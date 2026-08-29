@@ -388,6 +388,7 @@ export default function App() {
               isEmbeddedInSimulator={false}
               onAdminAccess={() => setCurrentView('admin_users')}
               onLoginSuccess={(u) => setSelectedUserForPreview(u)}
+              onNavigateToActivation={() => handleNavigateToActivation()}
             />
           </div>
         )}
