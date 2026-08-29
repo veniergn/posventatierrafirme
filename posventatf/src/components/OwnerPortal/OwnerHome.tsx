@@ -3,7 +3,7 @@ import { User, Project, ConstructionMilestone, UnitDetail } from '../../types';
 import { INITIAL_UNIT_DETAILS } from '../../data/initialData';
 
 interface OwnerHomeProps {
-  user: User;
+  user: User | null;
   projects: Project[];
   milestones: ConstructionMilestone[];
   onNavigateToMyUnit: () => void;
@@ -19,8 +19,8 @@ export const OwnerHome: React.FC<OwnerHomeProps> = ({
 }) => {
   // Find current user's project
   const userProject = projects.find(
-    (p) => p.name.toLowerCase().includes((user.complex || '').toLowerCase()) ||
-           (user.complex || '').toLowerCase().includes(p.name.toLowerCase())
+    (p) => p.name.toLowerCase().includes((user?.complex || '').toLowerCase()) ||
+           (user?.complex || '').toLowerCase().includes(p.name.toLowerCase())
   ) || projects[0];
 
   return (

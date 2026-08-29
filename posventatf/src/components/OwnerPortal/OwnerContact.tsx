@@ -14,6 +14,22 @@ import {
   ShieldCheck
 } from 'lucide-react';
 
+interface OwnerContactProps {
+  user: User | null;
+  projects: Project[];
+}
+
+export const OwnerContact: React.FC<OwnerContactProps> = ({ user, projects }) => {
+  const [ticketSubject, setTicketSubject] = useState('Consulta Técnica de Obra');
+  const [ticketMessage, setTicketMessage] = useState('');
+  const [isSent, setIsSent] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!ticketMessage.trim()) return;
+    setIsSent(true);
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header */}
@@ -254,3 +270,4 @@ import {
       )}
     </div>
   );
+};
