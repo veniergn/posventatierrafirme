@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   User, 
   Project, 
@@ -16,6 +16,7 @@ import {
   INITIAL_AUDIT_LOGS,
   INITIAL_UNITS
 } from './data/initialData';
+import { api } from './lib/api';
 import { PrototypeBar } from './components/PrototypeBar';
 import { AdminLayout } from './components/AdminPanel/AdminLayout';
 import { UserManagement } from './components/AdminPanel/UserManagement';
@@ -41,9 +42,34 @@ export default function App() {
   const [milestones, setMilestones] = useState<ConstructionMilestone[]>(INITIAL_MILESTONES);
   const [uploads, setUploads] = useState<MediaUploadItem[]>(INITIAL_UPLOADS);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(INITIAL_AUDIT_LOGS);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+
+  // Fetch from Supabase on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [cloudProjects, cloudUsers, cloudMilestones, cloudUnits] = await Promise.all([
+          api.getProjects(),
+          api.getUsers(),
+          api.getMilestones(),
+          api.getUnits()
+        ]);
+        
+        if (cloudProjects && cloudProjects.length > 0) setProjects(cloudProjects);
+        if (cloudUsers && cloudUsers.length > 0) setUsers(cloudUsers);
+        if (cloudMilestones && cloudMilestones.length > 0) setMilestones(cloudMilestones);
+        if (cloudUnits && cloudUnits.length > 0) setUnits(cloudUnits);
+      } catch (error) {
+        console.error("Error loading data from cloud:", error);
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Navigation & View state
-  const [currentView, setCurrentView] = useState<ActiveAppView>('admin_users');
+  const [currentView, setCurrentView] = useState<ActiveAppView>('splash_screen');
   const [selectedUserForPreview, setSelectedUserForPreview] = useState<User>(INITIAL_USERS[0]);
   const [activationCodeForScreen, setActivationCodeForScreen] = useState<string>('TF-8492');
 
@@ -53,7 +79,7 @@ export default function App() {
   const [activeUserForEmailModal, setActiveUserForEmailModal] = useState<User | null>(null);
   const [isAuditLogsModalOpen, setIsAuditLogsModalOpen] = useState(false);
 
-  // Active Admin Staff profile (Laura Martinez - Admin)
+  // Active Admin Staff profile
   const currentStaffUser = users.find((u) => u.role === 'staff') || INITIAL_USERS[2];
 
   // Helper to add audit logs

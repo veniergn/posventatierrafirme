@@ -50,25 +50,24 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
   return (
     <div className={`flex flex-col bg-[#FAF9FB] text-[#1B1C1E] min-h-full ${isEmbeddedInSimulator ? 'h-[750px] overflow-y-auto' : 'min-h-screen'}`}>
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#E0E3E7] px-4 sm:px-6 py-3 flex items-center justify-between shadow-xs">
-        <BrandLogo variant="horizontal" size="sm" />
+      <header className="sticky top-0 z-30 bg-white px-4 sm:px-6 py-4 flex items-center justify-between">
+        <div className="font-sans font-semibold text-lg tracking-tight">
+          <span className="text-[#1B1C1E]">Tierra</span>
+          <span className="text-[#8E1E19]">Firme</span>
+        </div>
         
-        <div className="flex items-center gap-3">
-          <div className="text-right hidden sm:block">
-            <div className="text-xs font-bold text-[#1B1C1E]">{user.name}</div>
-            <div className="text-[10px] text-[#8E1E19] font-semibold flex items-center justify-end gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              {user.unit || 'Unidad 4° B'} • {user.complex || 'Terrazas Park'}
-            </div>
-          </div>
-          <div className="w-8 h-8 rounded-full bg-[#FFDAD5] text-[#8A1B17] font-extrabold flex items-center justify-center text-xs border border-[#E0BFBB] shadow-xs">
-            {user.name.charAt(0)}
+        <div className="flex items-center">
+          <div className="w-8 h-8 rounded-full border-2 border-[#8E1E19] text-[#8E1E19] flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
           </div>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-4 sm:p-6 max-w-4xl mx-auto w-full pb-28">
+      <main className="flex-1 p-0 w-full pb-28">
         {/* If a project detail is open, show the 3D Commercial Detail View */}
         {selectedProjectForDetail ? (
           <ProjectCommercialDetail
@@ -120,56 +119,62 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
       </main>
 
       {/* Fixed Bottom Navigation Bar (Fiel a la especificación solicitada) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-[#E0E3E7] px-3 py-2 flex items-center justify-around shadow-lg">
+      <nav className="fixed bottom-0 left-0 right-0 z-30 bg-white border-t border-[#E0E3E7] px-3 py-2 flex items-center justify-around shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
         {/* [🏠 Inicio] */}
         <button
           onClick={() => handleTabChange('inicio')}
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[11px] font-bold transition-all ${
+          className={`flex flex-col items-center gap-1 py-1 px-3 text-[10px] uppercase font-bold transition-all ${
             activeTab === 'inicio' && !selectedProjectForDetail
-              ? 'text-[#8E1E19] scale-105'
+              ? 'text-[#8E1E19]'
               : 'text-[#5B5F63] hover:text-[#1B1C1E]'
           }`}
         >
-          <Home className="w-5 h-5" />
+          <Home className="w-5 h-5 mb-0.5" />
           <span>Inicio</span>
         </button>
 
-        {/* [📐 Mi Unidad] */}
+        {/* [📐 Mi Dpto] */}
         <button
           onClick={() => handleTabChange('unidad')}
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[11px] font-bold transition-all ${
+          className={`flex flex-col items-center gap-1 py-1 px-3 text-[10px] uppercase font-bold transition-all ${
             activeTab === 'unidad' && !selectedProjectForDetail
-              ? 'text-[#8E1E19] scale-105'
+              ? 'text-[#8E1E19]'
               : 'text-[#5B5F63] hover:text-[#1B1C1E]'
           }`}
         >
-          <Building className="w-5 h-5" />
-          <span>Mi Unidad</span>
+          {/* Using a custom SVG for the set square/ruler shown in mockup to be precise, or just lucide PenTool */}
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-0.5">
+            <path d="M21 21H3V3l18 18z"/>
+            <path d="M15 15v2"/>
+            <path d="M11 11v2"/>
+            <path d="M7 7v2"/>
+          </svg>
+          <span>Mi Dpto</span>
         </button>
 
-        {/* [🏢 Desarrollos] */}
+        {/* [🏢 Proyectos] */}
         <button
           onClick={() => handleTabChange('desarrollos')}
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[11px] font-bold transition-all ${
+          className={`flex flex-col items-center gap-1 py-1 px-3 text-[10px] uppercase font-bold transition-all ${
             activeTab === 'desarrollos' || selectedProjectForDetail
-              ? 'text-[#8E1E19] scale-105'
+              ? 'text-[#8E1E19]'
               : 'text-[#5B5F63] hover:text-[#1B1C1E]'
           }`}
         >
-          <Building2 className="w-5 h-5" />
-          <span>Desarrollos</span>
+          <Building2 className="w-5 h-5 mb-0.5" />
+          <span>Proyectos</span>
         </button>
 
         {/* [👤 Contacto] */}
         <button
           onClick={() => handleTabChange('contacto')}
-          className={`flex flex-col items-center gap-1 py-1 px-3 rounded-xl text-[11px] font-bold transition-all ${
+          className={`flex flex-col items-center gap-1 py-1 px-3 text-[10px] uppercase font-bold transition-all ${
             activeTab === 'contacto' && !selectedProjectForDetail
-              ? 'text-[#8E1E19] scale-105'
+              ? 'text-[#8E1E19]'
               : 'text-[#5B5F63] hover:text-[#1B1C1E]'
           }`}
         >
-          <Phone className="w-5 h-5" />
+          <Phone className="w-5 h-5 mb-0.5" />
           <span>Contacto</span>
         </button>
       </nav>
