@@ -1,0 +1,6 @@
+{
+  "name": "Tierra Firme - Portal y Gestión",
+  "description": "Sistema de gestión de usuarios, flujo de autorización por código y portal hermético para propietarios de Tierra Firme Desarrollos.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
