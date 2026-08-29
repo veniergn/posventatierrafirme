@@ -387,6 +387,7 @@ export default function App() {
               milestones={milestones}
               isEmbeddedInSimulator={false}
               onAdminAccess={() => setCurrentView('admin_users')}
+              onLoginSuccess={(u) => setSelectedUserForPreview(u)}
             />
           </div>
         )}
