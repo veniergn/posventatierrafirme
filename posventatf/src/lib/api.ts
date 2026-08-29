@@ -56,5 +56,28 @@ export const api = {
       console.error(err);
       return null;
     }
+  },
+
+  async deleteUnit(unitId: string) {
+    const { error } = await supabase.from('units').delete().eq('id', unitId);
+    if (error) {
+      console.error('Error al eliminar unidad:', error);
+      throw error;
+    }
+  },
+
+  // Owner Authentication
+  async loginOwner(email: string, passwordHash: string) {
+    const { data, error } = await supabase
+      .from('app_users')
+      .select('*')
+      .eq('email', email)
+      .eq('password', passwordHash)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+    return data;
   }
 };

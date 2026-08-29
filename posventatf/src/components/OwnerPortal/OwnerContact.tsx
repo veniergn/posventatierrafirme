@@ -14,28 +14,12 @@ import {
   ShieldCheck
 } from 'lucide-react';
 
-interface OwnerContactProps {
-  user: User;
-  projects: Project[];
-}
-
-export const OwnerContact: React.FC<OwnerContactProps> = ({ user, projects }) => {
-  const [ticketSubject, setTicketSubject] = useState('Consulta Técnica de Obra');
-  const [ticketMessage, setTicketMessage] = useState('');
-  const [isSent, setIsSent] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!ticketMessage.trim()) return;
-    setIsSent(true);
-  };
-
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header */}
       <div className="bg-white rounded-2xl p-6 border border-[#E0E3E7] shadow-xs">
         <span className="text-xs font-bold uppercase tracking-wider text-[#8E1E19] flex items-center gap-1.5">
-          <UserCheck className="w-4 h-4" /> Centro de Atención al Propietario
+          <UserCheck className="w-4 h-4" /> Centro de Atención
         </span>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1B1C1E] tracking-tight mt-0.5">
           Canales de Contacto Directo
@@ -184,88 +168,89 @@ export const OwnerContact: React.FC<OwnerContactProps> = ({ user, projects }) =>
         </div>
       </div>
 
-      {/* Support Ticket Submission Form */}
-      <div className="bg-white rounded-2xl p-6 border border-[#E0E3E7] shadow-xs space-y-4">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-[#1B1C1E]">
-          Enviar Consulta Formal al Equipo
-        </h3>
+      {/* Support Ticket Submission Form - Only for logged in owners */}
+      {user && (
+        <div className="bg-white rounded-2xl p-6 border border-[#E0E3E7] shadow-xs space-y-4">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-[#1B1C1E]">
+            Enviar Consulta Formal al Equipo
+          </h3>
 
-        {isSent ? (
-          <div className="text-center py-6 space-y-2">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-6 h-6" />
+          {isSent ? (
+            <div className="text-center py-6 space-y-2">
+              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center mx-auto">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <h4 className="font-bold text-[#1B1C1E]">¡Consulta Registrada!</h4>
+              <p className="text-xs text-[#5B5F63] max-w-sm mx-auto">
+                Tu ticket ha sido derivado al área correspondiente. Recibirás respuesta en <strong>{user.email}</strong> en un plazo máximo de 24 horas hábiles.
+              </p>
+              <button
+                onClick={() => {
+                  setIsSent(false);
+                  setTicketMessage('');
+                }}
+                className="mt-2 text-xs font-bold text-[#8E1E19] underline"
+              >
+                Enviar otra consulta
+              </button>
             </div>
-            <h4 className="font-bold text-[#1B1C1E]">¡Consulta Registrada!</h4>
-            <p className="text-xs text-[#5B5F63] max-w-sm mx-auto">
-              Tu ticket ha sido derivado al área correspondiente. Recibirás respuesta en <strong>{user.email}</strong> en un plazo máximo de 24 horas hábiles.
-            </p>
-            <button
-              onClick={() => {
-                setIsSent(false);
-                setTicketMessage('');
-              }}
-              className="mt-2 text-xs font-bold text-[#8E1E19] underline"
-            >
-              Enviar otra consulta
-            </button>
-          </div>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-bold text-[#1B1C1E] block mb-1">
-                  Motivo de la Consulta
-                </label>
-                <select
-                  value={ticketSubject}
-                  onChange={(e) => setTicketSubject(e.target.value)}
-                  className="w-full p-2.5 bg-[#FAF9FB] border border-[#E0E3E7] rounded-xl text-xs text-[#1B1C1E] focus:outline-none focus:ring-2 focus:ring-[#8E1E19]"
-                >
-                  <option value="Consulta Técnica de Obra">Consulta Técnica de Obra</option>
-                  <option value="Solicitud de Visita Presencial">Solicitud de Visita Presencial a Obra</option>
-                  <option value="Estado de Cuenta / Cuotas">Estado de Cuenta / Comprobante de Cuota</option>
-                  <option value="Consulta Comercial Nuevos Proyectos">Consulta Comercial sobre Nuevos Proyectos</option>
-                  <option value="Otro Asunto">Otro Asunto</option>
-                </select>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-[#1B1C1E] block mb-1">
+                    Motivo de la Consulta
+                  </label>
+                  <select
+                    value={ticketSubject}
+                    onChange={(e) => setTicketSubject(e.target.value)}
+                    className="w-full p-2.5 bg-[#FAF9FB] border border-[#E0E3E7] rounded-xl text-xs text-[#1B1C1E] focus:outline-none focus:ring-2 focus:ring-[#8E1E19]"
+                  >
+                    <option value="Consulta Técnica de Obra">Consulta Técnica de Obra</option>
+                    <option value="Solicitud de Visita Presencial">Solicitud de Visita Presencial a Obra</option>
+                    <option value="Estado de Cuenta / Cuotas">Estado de Cuenta / Comprobante de Cuota</option>
+                    <option value="Consulta Comercial Nuevos Proyectos">Consulta Comercial sobre Nuevos Proyectos</option>
+                    <option value="Otro Asunto">Otro Asunto</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-[#1B1C1E] block mb-1">
+                    Propietario Identificado
+                  </label>
+                  <input
+                    type="text"
+                    readOnly
+                    value={`${user.name} (${user.unit || 'Unidad'})`}
+                    className="w-full p-2.5 bg-gray-100 border border-[#E0E3E7] rounded-xl text-xs text-gray-600 font-semibold"
+                  />
+                </div>
               </div>
 
               <div>
                 <label className="text-xs font-bold text-[#1B1C1E] block mb-1">
-                  Propietario Identificado
+                  Detalle del Mensaje
                 </label>
-                <input
-                  type="text"
-                  readOnly
-                  value={`${user.name} (${user.unit || 'Unidad 4° B'})`}
-                  className="w-full p-2.5 bg-gray-100 border border-[#E0E3E7] rounded-xl text-xs text-gray-600 font-semibold"
+                <textarea
+                  rows={4}
+                  required
+                  placeholder="Escribe aquí tu consulta en detalle..."
+                  value={ticketMessage}
+                  onChange={(e) => setTicketMessage(e.target.value)}
+                  className="w-full p-3 bg-[#FAF9FB] border border-[#E0E3E7] rounded-xl text-xs text-[#1B1C1E] focus:outline-none focus:ring-2 focus:ring-[#8E1E19] focus:bg-white"
                 />
               </div>
-            </div>
 
-            <div>
-              <label className="text-xs font-bold text-[#1B1C1E] block mb-1">
-                Detalle del Mensaje
-              </label>
-              <textarea
-                rows={4}
-                required
-                placeholder="Escribe aquí tu consulta en detalle..."
-                value={ticketMessage}
-                onChange={(e) => setTicketMessage(e.target.value)}
-                className="w-full p-3 bg-[#FAF9FB] border border-[#E0E3E7] rounded-xl text-xs text-[#1B1C1E] focus:outline-none focus:ring-2 focus:ring-[#8E1E19] focus:bg-white"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="py-3 px-6 bg-[#8E1E19] hover:bg-[#6D0205] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
-            >
-              <Send className="w-4 h-4" />
-              <span>Enviar Consulta al Equipo Técnico</span>
-            </button>
-          </form>
-        )}
-      </div>
+              <button
+                type="submit"
+                className="py-3 px-6 bg-[#8E1E19] hover:bg-[#6D0205] text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md transition-all active:scale-95"
+              >
+                <Send className="w-4 h-4" />
+                <span>Enviar Consulta al Equipo Técnico</span>
+              </button>
+            </form>
+          )}
+        </div>
+      )}
     </div>
   );
-};

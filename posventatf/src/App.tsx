@@ -70,7 +70,7 @@ export default function App() {
 
   // Navigation & View state
   const [currentView, setCurrentView] = useState<ActiveAppView>('splash_screen');
-  const [selectedUserForPreview, setSelectedUserForPreview] = useState<User>(INITIAL_USERS[0]);
+  const [selectedUserForPreview, setSelectedUserForPreview] = useState<User | null>(null);
   const [activationCodeForScreen, setActivationCodeForScreen] = useState<string>('TF-8492');
 
   // Modals state
@@ -367,7 +367,7 @@ export default function App() {
         ======================================================== */}
         {currentView === 'preview_mode' && (
           <PreviewModeView
-            selectedUser={selectedUserForPreview}
+            selectedUser={selectedUserForPreview || users[0]}
             allUsers={users}
             projects={projects}
             milestones={milestones}

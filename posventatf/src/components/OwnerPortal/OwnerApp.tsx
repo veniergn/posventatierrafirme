@@ -1,29 +1,27 @@
 import React, { useState } from 'react';
 import { User, Project, ConstructionMilestone } from '../../types';
 import { INITIAL_PROJECTS } from '../../data/initialData';
-import { BrandLogo } from '../BrandLogo';
 import { OwnerHome } from './OwnerHome';
 import { OwnerMyUnit } from './OwnerMyUnit';
 import { OwnerProjectsCatalog } from './OwnerProjectsCatalog';
 import { OwnerContact } from './OwnerContact';
 import { ProjectCommercialDetail } from './ProjectCommercialDetail';
+import { OwnerPublicLogin } from './OwnerPublicLogin';
 import { 
   Home, 
-  Building, 
   Building2, 
   Phone, 
   X, 
-  Compass,
-  Sparkles,
   Globe
 } from 'lucide-react';
 
 interface OwnerAppProps {
-  user: User;
+  user: User | null;
   projects?: Project[];
   milestones: ConstructionMilestone[];
   isEmbeddedInSimulator?: boolean;
   onAdminAccess?: () => void;
+  onLoginSuccess?: (user: User) => void;
 }
 
 export const OwnerApp: React.FC<OwnerAppProps> = ({
@@ -31,7 +29,8 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
   projects = INITIAL_PROJECTS,
   milestones,
   isEmbeddedInSimulator = false,
-  onAdminAccess
+  onAdminAccess,
+  onLoginSuccess
 }) => {
   const [activeTab, setActiveTab] = useState<'inicio' | 'unidad' | 'desarrollos' | 'contacto'>('inicio');
   const [selectedProjectForDetail, setSelectedProjectForDetail] = useState<Project | null>(null);
@@ -64,7 +63,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
   return (
     <div className={`flex flex-col bg-[#FAF9FB] text-[#1B1C1E] min-h-full ${isEmbeddedInSimulator ? 'h-[750px] overflow-y-auto' : 'min-h-screen'}`}>
       {/* Top Header */}
-      <header className="sticky top-0 z-30 bg-white px-4 sm:px-6 py-4 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-white px-4 sm:px-6 py-4 flex items-center justify-between shadow-[0_2px_10px_rgba(0,0,0,0.03)]">
         <div className="font-sans font-semibold text-lg tracking-tight">
           <span className="text-[#1B1C1E]">Tierra</span>
           <span className="text-[#8E1E19]">Firme</span>
@@ -74,6 +73,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
           <button 
             onClick={handleAdminAccessClick}
             className="w-8 h-8 rounded-full border-2 border-[#8E1E19] text-[#8E1E19] flex items-center justify-center hover:bg-[#8E1E19]/10 transition-colors"
+            title="Acceso Administración"
           >
             <Globe className="w-5 h-5" />
           </button>
@@ -82,17 +82,15 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
 
       {/* Main Content Area */}
       <main className="flex-1 p-0 w-full pb-28">
-        {/* If a project detail is open, show the 3D Commercial Detail View */}
         {selectedProjectForDetail ? (
           <ProjectCommercialDetail
             project={selectedProjectForDetail}
-            user={user}
+            user={user || ({} as User)}
             onBack={handleBackFromDetail}
             onExpandImage={(url) => setFullscreenPhoto(url)}
           />
         ) : (
           <>
-            {/* 1. INICIO */}
             {activeTab === 'inicio' && (
               <OwnerHome
                 user={user}
@@ -104,16 +102,22 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
               />
             )}
 
-            {/* 2. MI UNIDAD */}
             {activeTab === 'unidad' && (
-              <OwnerMyUnit
-                user={user}
-                milestones={milestones}
-                onExpandImage={(url) => setFullscreenPhoto(url)}
-              />
+              !user ? (
+                <OwnerPublicLogin 
+                  onLoginSuccess={(u) => {
+                    if (onLoginSuccess) onLoginSuccess(u);
+                  }} 
+                />
+              ) : (
+                <OwnerMyUnit
+                  user={user}
+                  milestones={milestones}
+                  onExpandImage={(url) => setFullscreenPhoto(url)}
+                />
+              )
             )}
 
-            {/* 3. DESARROLLOS (Catálogo) */}
             {activeTab === 'desarrollos' && (
               <OwnerProjectsCatalog
                 projects={projects}
@@ -121,7 +125,6 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
               />
             )}
 
-            {/* 4. CONTACTO */}
             {activeTab === 'contacto' && (
               <OwnerContact
                 user={user}
