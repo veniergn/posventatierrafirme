@@ -292,13 +292,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#FAF9FB] flex flex-col font-sans selection:bg-[#FFDAD5] selection:text-[#8A1B17]">
-      {/* Top Prototype Navigation Bar */}
-      <PrototypeBar
-        currentView={currentView}
-        onNavigate={(view) => setCurrentView(view)}
-        pendingUsersCount={pendingUsersCount}
-      />
-
       {/* Main Screen Rendering */}
       <div className="flex-1 flex flex-col">
         {/* ========================================================
@@ -393,6 +386,7 @@ export default function App() {
               projects={projects}
               milestones={milestones}
               isEmbeddedInSimulator={false}
+              onAdminAccess={() => setCurrentView('admin_users')}
             />
           </div>
         )}

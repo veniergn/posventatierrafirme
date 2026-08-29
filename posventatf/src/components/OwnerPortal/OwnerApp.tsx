@@ -14,7 +14,8 @@ import {
   Phone, 
   X, 
   Compass,
-  Sparkles
+  Sparkles,
+  Globe
 } from 'lucide-react';
 
 interface OwnerAppProps {
@@ -22,13 +23,15 @@ interface OwnerAppProps {
   projects?: Project[];
   milestones: ConstructionMilestone[];
   isEmbeddedInSimulator?: boolean;
+  onAdminAccess?: () => void;
 }
 
 export const OwnerApp: React.FC<OwnerAppProps> = ({
   user,
   projects = INITIAL_PROJECTS,
   milestones,
-  isEmbeddedInSimulator = false
+  isEmbeddedInSimulator = false,
+  onAdminAccess
 }) => {
   const [activeTab, setActiveTab] = useState<'inicio' | 'unidad' | 'desarrollos' | 'contacto'>('inicio');
   const [selectedProjectForDetail, setSelectedProjectForDetail] = useState<Project | null>(null);
@@ -47,6 +50,17 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
     setSelectedProjectForDetail(null); // Reset detail view when changing tabs
   };
 
+  const handleAdminAccessClick = () => {
+    const pin = window.prompt('Ingrese código de acceso administrativo:');
+    if (pin === '1306') {
+      if (onAdminAccess) {
+        onAdminAccess();
+      }
+    } else if (pin !== null) {
+      alert('Código incorrecto');
+    }
+  };
+
   return (
     <div className={`flex flex-col bg-[#FAF9FB] text-[#1B1C1E] min-h-full ${isEmbeddedInSimulator ? 'h-[750px] overflow-y-auto' : 'min-h-screen'}`}>
       {/* Top Header */}
@@ -57,12 +71,12 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
         </div>
         
         <div className="flex items-center">
-          <div className="w-8 h-8 rounded-full border-2 border-[#8E1E19] text-[#8E1E19] flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </div>
+          <button 
+            onClick={handleAdminAccessClick}
+            className="w-8 h-8 rounded-full border-2 border-[#8E1E19] text-[#8E1E19] flex items-center justify-center hover:bg-[#8E1E19]/10 transition-colors"
+          >
+            <Globe className="w-5 h-5" />
+          </button>
         </div>
       </header>
 
