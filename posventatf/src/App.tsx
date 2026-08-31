@@ -56,17 +56,23 @@ export default function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [cloudProjects, cloudUsers, cloudMilestones, cloudUnits] = await Promise.all([
+        const [cloudProjects, cloudUsers, cloudMilestones, cloudUnits, cloudMappedUnits, cloudContacts, cloudMedia] = await Promise.all([
           api.getProjects(),
           api.getUsers(),
           api.getMilestones(),
-          api.getUnits()
+          api.getUnits(),
+          api.getUnidadesMapeadas(),
+          api.getContacts(),
+          api.getMediaUploads()
         ]);
         
         if (cloudProjects && cloudProjects.length > 0) setProjects(cloudProjects);
         if (cloudUsers && cloudUsers.length > 0) setUsers(cloudUsers);
         if (cloudMilestones && cloudMilestones.length > 0) setMilestones(cloudMilestones);
         if (cloudUnits && cloudUnits.length > 0) setUnits(cloudUnits);
+        if (cloudMappedUnits && cloudMappedUnits.length > 0) setMappedUnits(cloudMappedUnits);
+        if (cloudContacts && cloudContacts.length > 0) setContacts(cloudContacts);
+        if (cloudMedia && cloudMedia.length > 0) setUploads(cloudMedia);
       } catch (error) {
         console.error("Error loading data from cloud:", error);
       } finally {
