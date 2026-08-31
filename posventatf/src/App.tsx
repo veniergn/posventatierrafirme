@@ -12,7 +12,6 @@ import {
 } from './types';
 import { 
   INITIAL_USERS, 
-  INITIAL_PROJECTS, 
   INITIAL_MILESTONES, 
   INITIAL_UPLOADS, 
   INITIAL_AUDIT_LOGS,
@@ -45,12 +44,12 @@ export default function App() {
   // Global State
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
   const [users, setUsers] = useState<User[]>(INITIAL_USERS);
-  const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
-  const [units, setUnits] = useState<UnitDetail[]>(INITIAL_UNITS);
-  const [milestones, setMilestones] = useState<ConstructionMilestone[]>(INITIAL_MILESTONES);
-  const [uploads, setUploads] = useState<MediaUploadItem[]>(INITIAL_UPLOADS);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(INITIAL_AUDIT_LOGS);
-  const [contacts, setContacts] = useState<ContactItem[]>(INITIAL_CONTACTS);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [units, setUnits] = useState<UnitDetail[]>([]);
+  const [milestones, setMilestones] = useState<ConstructionMilestone[]>([]);
+  const [uploads, setUploads] = useState<MediaUploadItem[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [contacts, setContacts] = useState<ContactItem[]>([]);
   const [mappedUnits, setMappedUnits] = useState<UnidadMapeada[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 

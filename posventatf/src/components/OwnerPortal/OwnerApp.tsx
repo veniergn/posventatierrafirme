@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { User, Project, ConstructionMilestone, ContactItem, UnitDetail, UnidadMapeada, ObraVolumetria } from '../../types';
-import { INITIAL_PROJECTS } from '../../data/initialData';
 import { OwnerHome } from './OwnerHome';
 import { OwnerMyUnit } from './OwnerMyUnit';
 import { OwnerProjectsCatalog } from './OwnerProjectsCatalog';
@@ -32,7 +31,7 @@ interface OwnerAppProps {
 
 export const OwnerApp: React.FC<OwnerAppProps> = ({
   user,
-  projects = INITIAL_PROJECTS,
+  projects = [],
   milestones,
   contacts,
   units = [],
