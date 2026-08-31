@@ -80,13 +80,13 @@ export default function App() {
           api.getMediaUploads()
         ]);
         
-        if (cloudProjects && cloudProjects.length > 0) setProjects(cloudProjects);
-        if (cloudUsers && cloudUsers.length > 0) setUsers(cloudUsers);
-        if (cloudMilestones && cloudMilestones.length > 0) setMilestones(cloudMilestones);
-        if (cloudUnits && cloudUnits.length > 0) setUnits(cloudUnits);
-        if (cloudMappedUnits && cloudMappedUnits.length > 0) setMappedUnits(cloudMappedUnits);
-        if (cloudContacts && cloudContacts.length > 0) setContacts(cloudContacts);
-        if (cloudMedia && cloudMedia.length > 0) setUploads(cloudMedia);
+        if (cloudProjects) setProjects(cloudProjects);
+        if (cloudUsers) setUsers(cloudUsers);
+        if (cloudMilestones) setMilestones(cloudMilestones);
+        if (cloudUnits) setUnits(cloudUnits);
+        if (cloudMappedUnits) setMappedUnits(cloudMappedUnits);
+        if (cloudContacts) setContacts(cloudContacts);
+        if (cloudMedia) setUploads(cloudMedia);
       } catch (error) {
         console.error("Error loading data from cloud:", error);
       } finally {
