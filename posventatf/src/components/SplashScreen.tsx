@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ActiveAppView } from '../types';
+import { sounds } from '../lib/sounds';
 
 interface SplashScreenProps {
   onSelectView: (view: ActiveAppView) => void;
@@ -12,6 +13,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ onSelectView }) => {
   const handleTap = () => {
     if (isAnimating) return;
     setIsAnimating(true);
+    sounds.playTransitionSpace();
     
     // After animation finishes, navigate to owner portal
     setTimeout(() => {

@@ -33,7 +33,6 @@ export const OwnerPublicLogin: React.FC<OwnerPublicLoginProps> = ({
       const user = await api.loginOwner(email, password);
       
       if (user) {
-        sounds.playTransitionSpace();
         onLoginSuccess(user as User);
       } else {
         setErrorMsg('Credenciales incorrectas o usuario no encontrado.');
