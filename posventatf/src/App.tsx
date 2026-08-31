@@ -37,6 +37,7 @@ import { OwnerLoginPage } from './components/OwnerLogin/OwnerLoginPage';
 import { EmailInboxView } from './components/EmailInboxView';
 import { EmailSimulatorModal } from './components/EmailSimulatorModal';
 import { SplashScreen } from './components/SplashScreen';
+import { InstallPWA } from './components/InstallPWA';
 import { UnidadMapeada } from './types';
 
 export default function App() {
@@ -110,35 +111,56 @@ export default function App() {
   };
 
   // Handlers for User Management
-  const handleCreateUser = (newUser: User) => {
-    setUsers((prev) => [newUser, ...prev]);
-    logAction(
-      newUser.role === 'propietario' ? 'Alta de Propietario' : 'Alta de Personal Staff',
-      `Registró a ${newUser.name} (${newUser.email}) con token ${newUser.activationCode} y asignación ${newUser.unit || newUser.staffRole}`,
-      'user'
-    );
-    // Open email preview modal automatically to demonstrate the dispatched template
-    setActiveUserForEmailModal(newUser);
+  const handleCreateUser = async (newUser: User) => {
+    try {
+      const createdUser = await api.createUser(newUser);
+      if (createdUser) {
+        setUsers((prev) => [createdUser, ...prev]);
+        logAction(
+          newUser.role === 'propietario' ? 'Alta de Propietario' : 'Alta de Personal Staff',
+          `Registró a ${newUser.name} (${newUser.email}) con token ${newUser.activationCode} y asignación ${newUser.unit || newUser.staffRole}`,
+          'user'
+        );
+        setActiveUserForEmailModal(createdUser);
+      }
+    } catch (err) {
+      console.error('Error al crear usuario en Supabase:', err);
+      alert('Hubo un error al guardar el usuario en la nube.');
+    }
   };
 
-  const handleUpdateUser = (updatedUser: User) => {
-    setUsers((prev) => prev.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
-    logAction(
-      'Actualización de Usuario',
-      `Modificó datos de ${updatedUser.name} (${updatedUser.role})`,
-      'user'
-    );
+  const handleUpdateUser = async (updatedUser: User) => {
+    try {
+      const savedUser = await api.updateUser(updatedUser);
+      if (savedUser) {
+        setUsers((prev) => prev.map((u) => (u.id === savedUser.id ? savedUser : u)));
+        logAction(
+          'Actualización de Usuario',
+          `Modificó datos de ${savedUser.name} (${savedUser.role})`,
+          'user'
+        );
+      }
+    } catch (err) {
+      console.error('Error al actualizar usuario en Supabase:', err);
+      alert('Hubo un error al actualizar el usuario en la nube.');
+    }
   };
 
-  const handleDeleteUser = (userId: string) => {
+  const handleDeleteUser = async (userId: string) => {
     const userToDelete = users.find((u) => u.id === userId);
     if (userToDelete) {
-      setUsers((prev) => prev.filter((u) => u.id !== userId));
-      logAction(
-        'Baja de Usuario',
-        `Eliminó al usuario ${userToDelete.name} del sistema`,
-        'user'
-      );
+      try {
+        await api.deleteUser(userId);
+        setUsers((prev) => prev.filter((u) => u.id !== userId));
+        logAction(
+          'Baja de Usuario',
+          `Eliminó al usuario ${userToDelete.name} del sistema`,
+          'user'
+        );
+      } catch (err) {
+        console.error('Error al eliminar usuario en Supabase:', err);
+        alert('Hubo un error al eliminar el usuario en la nube.');
+      }
     }
   };
 
@@ -155,55 +177,91 @@ export default function App() {
   };
 
   // Handlers for Units Management (CRUD)
-  const handleAddUnit = (newUnit: UnitDetail) => {
-    setUnits((prev) => [newUnit, ...prev]);
-    logAction(
-      'Alta de Unidad Inmobiliaria',
-      `Agregó ${newUnit.unitNumber} en ${newUnit.complexName} (${newUnit.status})`,
-      'project'
-    );
+  const handleAddUnit = async (newUnit: UnitDetail) => {
+    try {
+      const createdUnit = await api.createUnit(newUnit);
+      if (createdUnit) {
+        setUnits((prev) => [createdUnit, ...prev]);
+        logAction(
+          'Alta de Unidad Inmobiliaria',
+          `Agregó ${createdUnit.unitNumber} en ${createdUnit.complexName} (${createdUnit.status})`,
+          'project'
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error guardando la unidad en Supabase.');
+    }
   };
 
-  const handleUpdateUnit = (updatedUnit: UnitDetail) => {
-    setUnits((prev) => prev.map((u) => (u.id === updatedUnit.id ? updatedUnit : u)));
-    logAction(
-      'Actualización de Unidad',
-      `Modificó especificaciones de ${updatedUnit.unitNumber} (${updatedUnit.complexName})`,
-      'project'
-    );
+  const handleUpdateUnit = async (updatedUnit: UnitDetail) => {
+    try {
+      const savedUnit = await api.updateUnit(updatedUnit);
+      if (savedUnit) {
+        setUnits((prev) => prev.map((u) => (u.id === savedUnit.id ? savedUnit : u)));
+        logAction(
+          'Actualización de Unidad',
+          `Modificó especificaciones de ${savedUnit.unitNumber} (${savedUnit.complexName})`,
+          'project'
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error actualizando la unidad en Supabase.');
+    }
   };
 
-  const handleDeleteUnit = (unitId: string) => {
+  const handleDeleteUnit = async (unitId: string) => {
     const unitToDelete = units.find((u) => u.id === unitId);
     if (unitToDelete) {
-      setUnits((prev) => prev.filter((u) => u.id !== unitId));
-      logAction(
-        'Baja de Unidad',
-        `Eliminó ${unitToDelete.unitNumber} de ${unitToDelete.complexName}`,
-        'project'
-      );
+      try {
+        await api.deleteUnit(unitId);
+        setUnits((prev) => prev.filter((u) => u.id !== unitId));
+        logAction(
+          'Baja de Unidad',
+          `Eliminó ${unitToDelete.unitNumber} de ${unitToDelete.complexName}`,
+          'project'
+        );
+      } catch (err) {
+        console.error(err);
+        alert('Error eliminando la unidad en Supabase.');
+      }
     }
   };
 
   // Handlers for Projects CRUD
-  const handleAddProject = (newProject: Project) => {
-    setProjects((prev) => [newProject, ...prev]);
-    logAction(
-      'Creación de Nuevo Desarrollo',
-      `Registró el desarrollo arquitectónico "${newProject.name}" con ${newProject.totalUnits} unidades`,
-      'project'
-    );
+  const handleAddProject = async (newProject: Project) => {
+    try {
+      const createdProj = await api.createProject(newProject);
+      if (createdProj) {
+        setProjects((prev) => [createdProj, ...prev]);
+        logAction(
+          'Creación de Nuevo Desarrollo',
+          `Registró el desarrollo arquitectónico "${createdProj.name}" con ${createdProj.totalUnits} unidades`,
+          'project'
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error guardando el proyecto en Supabase.');
+    }
   };
 
-  const handleDeleteProject = (projectId: string) => {
+  const handleDeleteProject = async (projectId: string) => {
     const proj = projects.find((p) => p.id === projectId);
     if (proj) {
-      setProjects((prev) => prev.filter((p) => p.id !== projectId));
-      logAction(
-        'Eliminación de Desarrollo',
-        `Removió el proyecto "${proj.name}" y sus parámetros`,
-        'project'
-      );
+      try {
+        await api.deleteProject(projectId);
+        setProjects((prev) => prev.filter((p) => p.id !== projectId));
+        logAction(
+          'Eliminación de Desarrollo',
+          `Removió el proyecto "${proj.name}" y sus parámetros`,
+          'project'
+        );
+      } catch (err) {
+        console.error(err);
+        alert('Error eliminando el proyecto en Supabase.');
+      }
     }
   };
 
@@ -224,24 +282,90 @@ export default function App() {
   };
 
   // Handlers for Multimedia Uploads
-  const handleAddUpload = (item: MediaUploadItem) => {
-    setUploads((prev) => [item, ...prev]);
-    logAction(
-      'Carga de Multimedia / Avance',
-      `Subió "${item.fileName}" (${item.type.toUpperCase()}) asignado a ${item.complexName || 'Complejo Terrazas'}`,
-      'media'
-    );
+  const handleAddUpload = async (item: MediaUploadItem) => {
+    try {
+      const createdItem = await api.createMediaUpload(item);
+      if (createdItem) {
+        setUploads((prev) => [createdItem, ...prev]);
+        logAction(
+          'Carga de Multimedia / Avance',
+          `Subió "${createdItem.fileName}" (${createdItem.type.toUpperCase()}) asignado a ${createdItem.complexName || 'Complejo Terrazas'}`,
+          'media'
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error guardando el archivo en Supabase.');
+    }
   };
 
-  const handleDeleteUpload = (id: string) => {
+  const handleDeleteUpload = async (id: string) => {
     const item = uploads.find((u) => u.id === id);
-    setUploads((prev) => prev.filter((u) => u.id !== id));
     if (item) {
-      logAction(
-        'Eliminación de Archivo',
-        `Eliminó "${item.fileName}" de la biblioteca multimedia`,
-        'media'
-      );
+      try {
+        await api.deleteMediaUpload(id);
+        setUploads((prev) => prev.filter((u) => u.id !== id));
+        logAction(
+          'Eliminación de Archivo',
+          `Eliminó "${item.fileName}" de la biblioteca multimedia`,
+          'media'
+        );
+      } catch (err) {
+        console.error(err);
+        alert('Error eliminando el archivo en Supabase.');
+      }
+    }
+  };
+
+  // Handlers for Contacts
+  const handleAddContact = async (contact: ContactItem) => {
+    try {
+      const createdContact = await api.createContact(contact);
+      if (createdContact) setContacts((prev) => [createdContact, ...prev]);
+    } catch (err) {
+      console.error(err);
+      alert('Error guardando el contacto en Supabase.');
+    }
+  };
+
+  const handleUpdateContact = async (contact: ContactItem) => {
+    try {
+      const savedContact = await api.updateContact(contact);
+      if (savedContact) setContacts((prev) => prev.map((c) => (c.id === savedContact.id ? savedContact : c)));
+    } catch (err) {
+      console.error(err);
+      alert('Error actualizando el contacto en Supabase.');
+    }
+  };
+
+  const handleDeleteContact = async (id: string) => {
+    try {
+      await api.deleteContact(id);
+      setContacts((prev) => prev.filter((c) => c.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert('Error eliminando el contacto en Supabase.');
+    }
+  };
+
+  // Handlers for Interactive Mappings
+  const handleSaveMappedUnit = async (mapping: UnidadMapeada) => {
+    try {
+      const createdMapping = await api.createUnidadMapeada(mapping);
+      if (createdMapping) setMappedUnits((prev) => [createdMapping, ...prev]);
+    } catch (err) {
+      console.error(err);
+      alert('Error guardando el mapeo en Supabase.');
+    }
+  };
+
+  const handleDeleteMappedUnit = async (id: string) => {
+    try {
+      await api.deleteUnidadMapeada(id);
+      setMappedUnits((prev) => prev.filter((m) => m.id !== id));
+    } catch (err) {
+      console.error(err);
+      alert('Error eliminando el mapeo en Supabase.');
     }
   };
 
@@ -370,9 +494,9 @@ export default function App() {
             {currentView === 'admin_contacts' && (
               <ContactsManagement
                 contacts={contacts}
-                onAddContact={(c) => setContacts([c, ...contacts])}
-                onUpdateContact={(c) => setContacts(contacts.map(x => x.id === c.id ? c : x))}
-                onDeleteContact={(id) => setContacts(contacts.filter(x => x.id !== id))}
+                onAddContact={handleAddContact}
+                onUpdateContact={handleUpdateContact}
+                onDeleteContact={handleDeleteContact}
               />
             )}
 
@@ -388,8 +512,8 @@ export default function App() {
                   estado: 'Activo'
                 }}
                 mappedUnits={mappedUnits}
-                onSaveMappedUnit={(m) => setMappedUnits([m, ...mappedUnits])}
-                onDeleteMappedUnit={(id) => setMappedUnits(mappedUnits.filter(x => x.id !== id))}
+                onSaveMappedUnit={handleSaveMappedUnit}
+                onDeleteMappedUnit={handleDeleteMappedUnit}
               />
             )}
           </AdminLayout>
@@ -506,6 +630,7 @@ export default function App() {
         onClose={() => setIsAuditLogsModalOpen(false)}
         logs={auditLogs}
       />
+      <InstallPWA />
     </div>
   );
 }
