@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { UploadCloud, File as FileIcon, X, Loader2 } from 'lucide-react';
-import { api } from '../../lib/api';
+import { api } from '../lib/api';
 
 interface FileDropzoneProps {
   onUploadSuccess: (url: string) => void;

@@ -310,6 +310,7 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
                 {mappedUnits.length === 0 && (
                   <p className="text-xs text-gray-500 text-center py-4">No hay áreas interactivas configuradas aún.</p>
                 )}
+                </div>
               </div>
             </div>
           )}
