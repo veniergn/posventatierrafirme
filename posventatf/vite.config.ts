@@ -16,21 +16,21 @@ export default defineConfig(() => {
           name: 'Tierra Firme Desarrollos',
           short_name: 'TierraFirme',
           description: 'Portal de Gestión y Posventa de Tierra Firme',
-          theme_color: '#FAF9FB',
-          background_color: '#FAF9FB',
+          theme_color: '#FFFFFF',
+          background_color: '#FFFFFF',
           display: 'standalone',
           icons: [
             {
               src: 'pwa-192x192.png',
               sizes: '192x192',
               type: 'image/png',
-              purpose: 'any maskable'
+              purpose: 'any'
             },
             {
               src: 'pwa-512x512.png',
               sizes: '512x512',
               type: 'image/png',
-              purpose: 'any maskable'
+              purpose: 'any'
             }
           ]
         }

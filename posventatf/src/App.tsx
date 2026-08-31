@@ -400,22 +400,30 @@ export default function App() {
   };
 
   // Handlers for Activation Flow
-  const handleActivationSuccess = (code: string) => {
+  const handleActivationSuccess = async (code: string, newPassword?: string) => {
     // Find user with matching code and set to active
     const userToActivate = users.find((u) => u.activationCode.toUpperCase() === code.toUpperCase());
     if (userToActivate) {
       const updated = {
         ...userToActivate,
         status: 'activo' as const,
-        activatedAt: new Date().toISOString().split('T')[0]
+        activatedAt: new Date().toISOString().split('T')[0],
+        ...(newPassword ? { password: newPassword, isCustomPassword: true } : {})
       };
-      setUsers((prev) => prev.map((u) => (u.id === userToActivate.id ? updated : u)));
-      setSelectedUserForPreview(updated);
-      logAction(
-        'Activación de Cuenta Exitosa',
-        `El usuario ${userToActivate.name} verificó su token y activó su contraseña privada`,
-        'user'
-      );
+      
+      try {
+        await api.updateUser(updated);
+        setUsers((prev) => prev.map((u) => (u.id === userToActivate.id ? updated : u)));
+        setSelectedUserForPreview(updated);
+        logAction(
+          'Activación de Cuenta Exitosa',
+          `El usuario ${userToActivate.name} verificó su token y activó su contraseña privada`,
+          'user'
+        );
+      } catch (err) {
+        console.error("Error activando usuario en nube:", err);
+        alert("Hubo un error al activar el usuario en la nube.");
+      }
     }
     setCurrentView('owner_portal');
   };

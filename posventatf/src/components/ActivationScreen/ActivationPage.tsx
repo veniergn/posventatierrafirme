@@ -5,7 +5,7 @@ import confetti from 'canvas-confetti';
 
 interface ActivationPageProps {
   initialCode?: string;
-  onSuccessActivation: (code: string) => void;
+  onSuccessActivation: (code: string, password: string) => void;
   onNavigateToLogin: () => void;
 }
 
@@ -66,7 +66,7 @@ export const ActivationPage: React.FC<ActivationPageProps> = ({
       }
 
       setTimeout(() => {
-        onSuccessActivation(code);
+        onSuccessActivation(code, password);
       }, 2000);
     }, 1200);
   };
