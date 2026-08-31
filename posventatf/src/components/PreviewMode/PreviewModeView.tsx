@@ -55,8 +55,8 @@ export const PreviewModeView: React.FC<PreviewModeViewProps> = ({
             <Eye className="w-4 h-4 text-[#FFA095]" />
             <span>
               Estás viendo la cuenta de:{' '}
-              <strong className="text-white font-bold">{selectedUser.name}</strong> •{' '}
-              <span className="text-[#FFA095] font-semibold">{selectedUser.unit || 'Unidad 4° B'}</span>
+              <strong className="text-white font-bold">{selectedUser?.name || 'Invitado'}</strong> •{' '}
+              <span className="text-[#FFA095] font-semibold">{selectedUser?.unit || 'Ninguna'}</span>
             </span>
             <ChevronDown className="w-3.5 h-3.5 text-gray-400 ml-1" />
           </div>
@@ -76,14 +76,14 @@ export const PreviewModeView: React.FC<PreviewModeViewProps> = ({
                       setUserDropdownOpen(false);
                     }}
                     className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-[#FFDAD5]/30 transition-colors ${
-                      u.id === selectedUser.id ? 'bg-[#FFDAD5]/50 font-bold text-[#8A1B17]' : ''
+                      u.id === selectedUser?.id ? 'bg-[#FFDAD5]/50 font-bold text-[#8A1B17]' : ''
                     }`}
                   >
                     <div>
                       <div className="font-semibold">{u.name}</div>
                       <div className="text-[10px] text-[#5B5F63]">{u.unit} • {u.complex}</div>
                     </div>
-                    {u.id === selectedUser.id && (
+                    {u.id === selectedUser?.id && (
                       <span className="w-2 h-2 rounded-full bg-[#8E1E19]" />
                     )}
                   </button>
