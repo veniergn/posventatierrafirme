@@ -1,5 +1,6 @@
 class SoundManager {
   private audioCtx: AudioContext | null = null;
+  private unlocked = false;
 
   private init() {
     if (!this.audioCtx) {
@@ -11,9 +12,22 @@ class SoundManager {
     return this.audioCtx;
   }
 
+  public unlock() {
+    if (this.unlocked) return;
+    const ctx = this.init();
+    // Play silent buffer to unlock audio engine on iOS
+    const buffer = ctx.createBuffer(1, 1, 22050);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
+    this.unlocked = true;
+  }
+
   // 1. Sonido al tocar el logo de ingreso (Click futurista/suave)
   public playLoginClick() {
     try {
+      this.unlock();
       const ctx = this.init();
       const osc = ctx.createOscillator();
       const gainNode = ctx.createGain();
@@ -23,7 +37,7 @@ class SoundManager {
       osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
 
       gainNode.gain.setValueAtTime(0, ctx.currentTime);
-      gainNode.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+      gainNode.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.02); // 80% volume
       gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
 
       osc.connect(gainNode);
@@ -39,6 +53,7 @@ class SoundManager {
   // 2. Sonido espacial/universo para transición
   public playTransitionSpace() {
     try {
+      this.unlock();
       const ctx = this.init();
       
       // Creamos un acorde "espacial" y misterioso
@@ -56,7 +71,7 @@ class SoundManager {
 
         // Envolvente de volumen (Sube lento, baja lento)
         gainNode.gain.setValueAtTime(0, ctx.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.15 / freqs.length, ctx.currentTime + 0.5 + (index * 0.2));
+        gainNode.gain.linearRampToValueAtTime(1.0 / freqs.length, ctx.currentTime + 0.5 + (index * 0.2)); // 100% total volume
         gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.5);
 
         osc.connect(gainNode);
@@ -73,6 +88,7 @@ class SoundManager {
   // 3. Sonido cuando se guarda algo (Campanilla de éxito)
   public playSaveSuccess() {
     try {
+      this.unlock();
       const ctx = this.init();
       
       // Dos notas rápidas (Quinta perfecta: C6 -> G6)
@@ -84,7 +100,7 @@ class SoundManager {
         osc.frequency.value = freq;
 
         gainNode.gain.setValueAtTime(0, startTime);
-        gainNode.gain.linearRampToValueAtTime(0.2, startTime + 0.05);
+        gainNode.gain.linearRampToValueAtTime(0.7, startTime + 0.05); // 70% volume
         gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.4);
 
         osc.connect(gainNode);
