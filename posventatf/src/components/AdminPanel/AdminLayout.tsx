@@ -173,6 +173,8 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
               <span className="font-semibold text-[#1B1C1E]">Panel de Control</span>
               <span>/</span>
               <span className="capitalize">{currentView.replace('admin_', '')}</span>
+              <span className="ml-4 text-gray-300">|</span>
+              <span className="ml-4 font-medium text-[#8E1E19]">{new Date().toLocaleDateString('es-AR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
             </div>
           </div>
 

@@ -7,6 +7,7 @@ import { OwnerProjectsCatalog } from './OwnerProjectsCatalog';
 import { OwnerContact } from './OwnerContact';
 import { ProjectCommercialDetail } from './ProjectCommercialDetail';
 import { OwnerPublicLogin } from './OwnerPublicLogin';
+import { AdminLoginModal } from '../AdminPanel/AdminLoginModal';
 import { 
   Home, 
   Building2, 
@@ -24,7 +25,7 @@ interface OwnerAppProps {
   mappedUnits?: UnidadMapeada[];
   volumetria?: ObraVolumetria;
   isEmbeddedInSimulator?: boolean;
-  onAdminAccess?: () => void;
+  onAdminAccess?: (user?: User) => void;
   onLoginSuccess?: (user: User) => void;
   onNavigateToActivation?: () => void;
 }
@@ -45,6 +46,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
   const [activeTab, setActiveTab] = useState<'inicio' | 'unidad' | 'desarrollos' | 'contacto'>('inicio');
   const [selectedProjectForDetail, setSelectedProjectForDetail] = useState<Project | null>(null);
   const [fullscreenPhoto, setFullscreenPhoto] = useState<string | null>(null);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
 
   const handleSelectProjectDetail = (project: Project) => {
     setSelectedProjectForDetail(project);
@@ -60,14 +62,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
   };
 
   const handleAdminAccessClick = () => {
-    const pin = window.prompt('Ingrese código de acceso administrativo:');
-    if (pin === '1306') {
-      if (onAdminAccess) {
-        onAdminAccess();
-      }
-    } else if (pin !== null) {
-      alert('Código incorrecto');
-    }
+    setShowAdminLogin(true);
   };
 
   return (
@@ -88,6 +83,16 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
           </button>
         </div>
       </header>
+
+      {showAdminLogin && (
+        <AdminLoginModal
+          onClose={() => setShowAdminLogin(false)}
+          onSuccess={(u) => {
+            setShowAdminLogin(false);
+            if (onAdminAccess) onAdminAccess(u);
+          }}
+        />
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1 p-0 w-full pb-28">
@@ -121,7 +126,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
                     if (onLoginSuccess) onLoginSuccess(u);
                   }}
                   onNavigateToActivation={onNavigateToActivation}
-                  onQuickLoginAsAdmin={onAdminAccess}
+                  onQuickLoginAsAdmin={() => setShowAdminLogin(true)}
                 />
               ) : (
                 <OwnerMyUnit

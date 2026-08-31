@@ -22,7 +22,7 @@ export const OwnerProjectsCatalog: React.FC<OwnerProjectsCatalogProps> = ({
   onSelectProject
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState<'all' | 'pozo' | 'construccion' | 'entrega'>('all');
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'pozo' | 'construccion' | 'entrega' | 'entregadas'>('all');
 
   const filteredProjects = projects.filter((p) => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -35,6 +35,7 @@ export const OwnerProjectsCatalog: React.FC<OwnerProjectsCatalogProps> = ({
     if (selectedFilter === 'pozo') return p.commercialStatus?.toLowerCase().includes('pozo') || p.status?.toLowerCase().includes('pre-sale');
     if (selectedFilter === 'construccion') return p.commercialStatus?.toLowerCase().includes('construcción') || p.status?.toLowerCase().includes('active');
     if (selectedFilter === 'entrega') return p.commercialStatus?.toLowerCase().includes('entrega') || p.status?.toLowerCase().includes('sold');
+    if (selectedFilter === 'entregadas') return p.commercialStatus?.toLowerCase().includes('entregada') || p.status?.toLowerCase().includes('completed');
     return true;
   });
 
@@ -107,6 +108,16 @@ export const OwnerProjectsCatalog: React.FC<OwnerProjectsCatalogProps> = ({
               }`}
             >
               Próxima Entrega
+            </button>
+            <button
+              onClick={() => setSelectedFilter('entregadas')}
+              className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
+                selectedFilter === 'entregadas'
+                  ? 'bg-[#8E1E19] text-white'
+                  : 'bg-[#FAF9FB] text-[#5B5F63] hover:bg-gray-100 border border-[#E0E3E7]'
+              }`}
+            >
+              Entregadas
             </button>
           </div>
         </div>

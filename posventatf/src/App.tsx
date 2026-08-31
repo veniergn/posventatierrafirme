@@ -106,9 +106,10 @@ export default function App() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [activeUserForEmailModal, setActiveUserForEmailModal] = useState<User | null>(null);
   const [isAuditLogsModalOpen, setIsAuditLogsModalOpen] = useState(false);
+  const [activeStaffUser, setActiveStaffUser] = useState<User | null>(null);
 
   // Active Admin Staff profile
-  const currentStaffUser = users.find((u) => u.role === 'staff') || INITIAL_USERS[2];
+  const currentStaffUser = activeStaffUser || users.find((u) => u.role === 'staff') || INITIAL_USERS[2];
 
   // Helper to add audit logs
   const logAction = (action: string, details: string, entityType: AuditLog['entityType']) => {
@@ -598,7 +599,10 @@ export default function App() {
                 estado: 'Activo'
               }}
               isEmbeddedInSimulator={false}
-              onAdminAccess={() => setCurrentView('admin_users')}
+              onAdminAccess={(staffUser) => {
+                if (staffUser) setActiveStaffUser(staffUser as User);
+                setCurrentView('admin_users');
+              }}
               onLoginSuccess={(u) => setSelectedUserForPreview(u)}
               onNavigateToActivation={() => handleNavigateToActivation()}
             />
