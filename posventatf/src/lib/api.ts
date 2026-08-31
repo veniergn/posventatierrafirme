@@ -166,6 +166,35 @@ export const api = {
   },
 
   // ==========================================
+  // STORAGE BUCKET UPLOAD
+  // ==========================================
+  async uploadFileToStorage(file: File, folder: string = 'general'): Promise<string> {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+      const { data, error } = await supabase.storage
+        .from('posventa_media')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('posventa_media')
+        .getPublicUrl(fileName);
+
+      return publicUrlData.publicUrl;
+    } catch (err) {
+      console.error('Error uploading file to Supabase Storage:', err);
+      throw err;
+    }
+  },
+
+  // ==========================================
   // MAPEO 2D (VOLUMETRÍAS Y UNIDADES)
   // ==========================================
   async getObrasVolumetria(): Promise<ObraVolumetria[] | null> {

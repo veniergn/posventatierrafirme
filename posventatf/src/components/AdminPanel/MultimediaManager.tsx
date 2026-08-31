@@ -12,6 +12,7 @@ import {
   Sparkles,
   Layers
 } from 'lucide-react';
+import { FileDropzone } from '../FileDropzone';
 
 interface MultimediaManagerProps {
   uploads: MediaUploadItem[];
@@ -32,7 +33,7 @@ export const MultimediaManager: React.FC<MultimediaManagerProps> = ({
 }) => {
   const [selectedType, setSelectedType] = useState<'render' | 'blueprint' | 'progress'>('progress');
   const [selectedComplex, setSelectedComplex] = useState('Complejo Terrazas');
-  const [dragOver, setDragOver] = useState(false);
+  const [uploadedUrl, setUploadedUrl] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [customFileName, setCustomFileName] = useState('');
@@ -59,12 +60,12 @@ export const MultimediaManager: React.FC<MultimediaManagerProps> = ({
         id: `up-${Date.now()}`,
         fileName,
         type: selectedType,
-        size: `${(Math.random() * 8 + 2).toFixed(1)} MB`,
+        size: uploadedUrl ? 'Auto' : `${(Math.random() * 8 + 2).toFixed(1)} MB`,
         timestamp: 'Recién ahora',
         uploadedBy: currentStaffName,
         uploadedByRole: currentStaffRole,
         status: 'synced',
-        url: previewUrls[selectedType],
+        url: uploadedUrl || previewUrls[selectedType],
         complexName: selectedComplex
       };
 
@@ -166,36 +167,21 @@ export const MultimediaManager: React.FC<MultimediaManagerProps> = ({
           </div>
 
           {/* Drag & Drop Area */}
-          <div
-            onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={(e) => { e.preventDefault(); setDragOver(false); }}
-            className={`border-2 border-dashed rounded-2xl p-8 text-center transition-all flex flex-col items-center justify-center space-y-3 ${
-              dragOver
-                ? 'border-[#8E1E19] bg-[#FFDAD5]/20 scale-[0.99]'
-                : 'border-[#8C716D]/40 hover:border-[#8E1E19]/60 bg-[#FAF9FB]'
-            }`}
-          >
-            <div className="w-16 h-16 rounded-full bg-[#FFDAD5] text-[#8E1E19] flex items-center justify-center shadow-xs">
-              <UploadCloud className="w-8 h-8" />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-[#1B1C1E]">
-                Arrastra y suelta tus archivos aquí o{' '}
-                <span className="text-[#8E1E19] underline cursor-pointer">explora en tu equipo</span>
-              </div>
-              <p className="text-xs text-[#5B5F63] mt-1">
-                Formatos soportados: JPG, PNG, PDF de alta resolución (Hasta 50 MB por archivo)
-              </p>
-            </div>
-
-            <div className="w-full max-w-md">
+          <div className="w-full">
+            <FileDropzone 
+              onUploadSuccess={(url) => setUploadedUrl(url)}
+              folder="multimedia"
+              label="Arrastra y suelta tus archivos aquí o haz clic para explorar"
+              accept="image/*,.pdf"
+            />
+            
+            <div className="w-full mt-4">
               <input
                 type="text"
                 value={customFileName}
                 onChange={(e) => setCustomFileName(e.target.value)}
                 placeholder="Nombre descriptivo opcional (ej. Losa Nivel 5 Octubre)"
-                className="w-full px-3 py-1.5 text-xs bg-white border border-[#E0E3E7] rounded-lg text-center outline-none focus:border-[#8E1E19]"
+                className="w-full px-3 py-2 text-xs bg-white border border-[#E0E3E7] rounded-lg text-center outline-none focus:border-[#8E1E19]"
               />
             </div>
           </div>

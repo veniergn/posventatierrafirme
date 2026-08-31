@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { UnitDetail, ObraVolumetria, UnidadMapeada } from '../../../types';
 import { MousePointerClick, Save, Trash2, Undo, CheckCircle2, Image as ImageIcon, MapPin } from 'lucide-react';
+import { FileDropzone } from '../../FileDropzone';
 
 interface Point {
   x: number;
@@ -14,6 +15,7 @@ interface MapperLayoutProps {
   mappedUnits: UnidadMapeada[];
   onSaveMappedUnit: (mapping: UnidadMapeada) => void;
   onDeleteMappedUnit: (id: string) => void;
+  onUpdateVolumetriaImage?: (url: string) => void;
 }
 
 export const MapperLayout: React.FC<MapperLayoutProps> = ({
@@ -21,30 +23,43 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
   volumetria,
   mappedUnits,
   onSaveMappedUnit,
-  onDeleteMappedUnit
+  onDeleteMappedUnit,
+  onUpdateVolumetriaImage
 }) => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentPolygon, setCurrentPolygon] = useState<Point[]>([]);
   const [selectedUnitId, setSelectedUnitId] = useState<string>('');
   const [hoveredPoly, setHoveredPoly] = useState<string | null>(null);
+  const [mousePos, setMousePos] = useState<Point | null>(null);
   
   const svgRef = useRef<SVGSVGElement>(null);
   
   // Default placeholder if no volumetria is provided
   const imgUrl = volumetria?.imagen_url || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=2000";
 
-  const handleSvgClick = (e: React.MouseEvent<SVGSVGElement>) => {
-    if (!isDrawing) return;
-    
+  const getCoordinates = (e: React.MouseEvent<SVGSVGElement> | React.MouseEvent<HTMLDivElement>) => {
     const svg = svgRef.current;
-    if (!svg) return;
-
-    // Calculate click coordinates relative to the SVG element (in percentages)
+    if (!svg) return null;
     const rect = svg.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
+    return { x, y };
+  };
 
-    setCurrentPolygon((prev) => [...prev, { x, y }]);
+  const handleSvgClick = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!isDrawing) return;
+    const coords = getCoordinates(e);
+    if (coords) setCurrentPolygon((prev) => [...prev, coords]);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    if (!isDrawing) return;
+    const coords = getCoordinates(e);
+    if (coords) setMousePos(coords);
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos(null);
   };
 
   const handleUndo = () => {
@@ -136,6 +151,8 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
               ref={svgRef}
               className="absolute inset-0 w-full h-full"
               onClick={handleSvgClick}
+              onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
               preserveAspectRatio="none"
             >
               {/* Existing Mapped Units */}
@@ -165,7 +182,7 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
               {isDrawing && currentPolygon.length > 0 && (
                 <>
                   <polygon
-                    points={currentPolygon.map(p => `${p.x}%,${p.y}%`).join(' ')}
+                    points={[...currentPolygon, ...(mousePos ? [mousePos] : [])].map(p => `${p.x}%,${p.y}%`).join(' ')}
                     fill="rgba(37, 211, 102, 0.2)"
                     stroke="#25D366"
                     strokeWidth="2"
@@ -180,6 +197,14 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
                       fill="#25D366"
                     />
                   ))}
+                  {mousePos && (
+                    <circle
+                      cx={`${mousePos.x}%`}
+                      cy={`${mousePos.y}%`}
+                      r="4"
+                      fill="rgba(37, 211, 102, 0.5)"
+                    />
+                  )}
                 </>
               )}
             </svg>
@@ -228,13 +253,33 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
               </div>
             </div>
           ) : (
-            <div className="p-5 space-y-4">
-              <h3 className="font-bold text-sm border-b pb-2 flex justify-between items-center">
-                <span>Unidades Mapeadas ({mappedUnits.length})</span>
-                <MapPin className="w-4 h-4 text-gray-400" />
-              </h3>
+            <div className="p-5 space-y-6">
+              
+              {/* Background Image Upload Section */}
+              {onUpdateVolumetriaImage && (
+                <div className="space-y-2">
+                  <h3 className="font-bold text-sm border-b pb-2 flex justify-between items-center">
+                    <span>Fondo / Plano Base</span>
+                    <ImageIcon className="w-4 h-4 text-gray-400" />
+                  </h3>
+                  <FileDropzone 
+                    onUploadSuccess={(url) => {
+                      if (url) onUpdateVolumetriaImage(url);
+                    }}
+                    folder="mapper"
+                    label="Subir nuevo plano base"
+                  />
+                </div>
+              )}
 
-              <div className="space-y-3">
+              {/* Mapped Units Section */}
+              <div className="space-y-2">
+                <h3 className="font-bold text-sm border-b pb-2 flex justify-between items-center">
+                  <span>Unidades Mapeadas ({mappedUnits.length})</span>
+                  <MapPin className="w-4 h-4 text-gray-400" />
+                </h3>
+
+                <div className="space-y-3">
                 {mappedUnits.map(mapping => {
                   const unit = units.find(u => u.id === mapping.unidad_id);
                   return (

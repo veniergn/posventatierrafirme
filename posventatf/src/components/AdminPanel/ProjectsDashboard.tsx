@@ -21,6 +21,7 @@ import {
   AlertTriangle,
   FileText
 } from 'lucide-react';
+import { FileDropzone } from '../FileDropzone';
 
 interface ProjectsDashboardProps {
   projects: Project[];
@@ -524,13 +525,12 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
               </div>
 
               <div>
-                <label className="font-bold text-[#1B1C1E] block mb-1">URL de Render Principal</label>
-                <input
-                  type="text"
-                  value={newProjectData.image || ''}
-                  onChange={(e) => setNewProjectData({ ...newProjectData, image: e.target.value })}
-                  placeholder="https://..."
-                  className="w-full p-2.5 bg-[#FAF9FB] border border-[#E0E3E7] rounded-xl text-xs"
+                <label className="font-bold text-[#1B1C1E] block mb-1">Render Principal</label>
+                <FileDropzone 
+                  onUploadSuccess={(url) => setNewProjectData({ ...newProjectData, image: url })}
+                  folder="projects"
+                  label="Arrastra el render principal aquí o haz clic para subir"
+                  currentImage={newProjectData.image}
                 />
               </div>
 

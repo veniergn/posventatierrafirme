@@ -373,6 +373,15 @@ export default function App() {
     }
   };
 
+  const handleUpdateVolumetriaImage = (url: string) => {
+    if (projects.length > 0) {
+      handleUpdateProjectDetails({
+        ...projects[0],
+        image: url
+      });
+    }
+  };
+
   // Handlers for Interactive Mappings
   const handleSaveMappedUnit = async (mapping: UnidadMapeada) => {
     try {
@@ -547,6 +556,7 @@ export default function App() {
                 mappedUnits={mappedUnits}
                 onSaveMappedUnit={handleSaveMappedUnit}
                 onDeleteMappedUnit={handleDeleteMappedUnit}
+                onUpdateVolumetriaImage={handleUpdateVolumetriaImage}
               />
             )}
           </AdminLayout>
