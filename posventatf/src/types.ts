@@ -163,6 +163,27 @@ export interface ContactItem {
   preferredChannel: 'whatsapp' | 'email' | 'call';
 }
 
+export interface ObraVolumetria {
+  id: string;
+  nombre: string;
+  descripcion?: string;
+  imagen_url: string;
+  width_original: number;
+  height_original: number;
+  estado: string;
+  created_at?: string;
+}
+
+export interface UnidadMapeada {
+  id: string;
+  volumetria_id: string;
+  unidad_id: string;
+  polygon_points: string;
+  tour_360_url?: string;
+  plano_pdf_url?: string;
+  created_at?: string;
+}
+
 export type ActiveAppView = 
   | 'splash_screen'
   | 'admin_users' 
@@ -170,6 +191,7 @@ export type ActiveAppView =
   | 'admin_units'
   | 'admin_multimedia' 
   | 'admin_contacts'
+  | 'admin_mapper'
   | 'preview_mode' 
   | 'owner_portal' 
   | 'owner_login' 

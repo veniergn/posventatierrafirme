@@ -28,6 +28,7 @@ import { EditUserModal } from './components/AdminPanel/EditUserModal';
 import { ProjectsDashboard } from './components/AdminPanel/ProjectsDashboard';
 import { MultimediaManager } from './components/AdminPanel/MultimediaManager';
 import { ContactsManagement } from './components/AdminPanel/ContactsManagement';
+import { MapperLayout } from './components/AdminPanel/InteractiveMapper/MapperLayout';
 import { AuditLogsModal } from './components/AdminPanel/AuditLogsModal';
 import { PreviewModeView } from './components/PreviewMode/PreviewModeView';
 import { OwnerApp } from './components/OwnerPortal/OwnerApp';
@@ -36,6 +37,7 @@ import { OwnerLoginPage } from './components/OwnerLogin/OwnerLoginPage';
 import { EmailInboxView } from './components/EmailInboxView';
 import { EmailSimulatorModal } from './components/EmailSimulatorModal';
 import { SplashScreen } from './components/SplashScreen';
+import { UnidadMapeada } from './types';
 
 export default function App() {
   // Global State
@@ -46,6 +48,7 @@ export default function App() {
   const [uploads, setUploads] = useState<MediaUploadItem[]>(INITIAL_UPLOADS);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(INITIAL_AUDIT_LOGS);
   const [contacts, setContacts] = useState<ContactItem[]>(INITIAL_CONTACTS);
+  const [mappedUnits, setMappedUnits] = useState<UnidadMapeada[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
 
   // Fetch from Supabase on mount
@@ -372,6 +375,23 @@ export default function App() {
                 onDeleteContact={(id) => setContacts(contacts.filter(x => x.id !== id))}
               />
             )}
+
+            {currentView === 'admin_mapper' && (
+              <MapperLayout
+                units={units}
+                volumetria={{
+                  id: 'vol-1',
+                  nombre: 'Render Principal',
+                  imagen_url: projects[0]?.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=2000',
+                  width_original: 1920,
+                  height_original: 1080,
+                  estado: 'Activo'
+                }}
+                mappedUnits={mappedUnits}
+                onSaveMappedUnit={(m) => setMappedUnits([m, ...mappedUnits])}
+                onDeleteMappedUnit={(id) => setMappedUnits(mappedUnits.filter(x => x.id !== id))}
+              />
+            )}
           </AdminLayout>
         )}
 
@@ -399,6 +419,16 @@ export default function App() {
               projects={projects}
               milestones={milestones}
               contacts={contacts}
+              units={units}
+              mappedUnits={mappedUnits}
+              volumetria={{
+                id: 'vol-1',
+                nombre: 'Render Principal',
+                imagen_url: projects[0]?.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=2000',
+                width_original: 1920,
+                height_original: 1080,
+                estado: 'Activo'
+              }}
               isEmbeddedInSimulator={false}
               onAdminAccess={() => setCurrentView('admin_users')}
               onLoginSuccess={(u) => setSelectedUserForPreview(u)}

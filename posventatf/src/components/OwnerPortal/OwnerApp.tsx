@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Project, ConstructionMilestone, ContactItem } from '../../types';
+import { User, Project, ConstructionMilestone, ContactItem, UnitDetail, UnidadMapeada, ObraVolumetria } from '../../types';
 import { INITIAL_PROJECTS } from '../../data/initialData';
 import { OwnerHome } from './OwnerHome';
 import { OwnerMyUnit } from './OwnerMyUnit';
@@ -20,6 +20,9 @@ interface OwnerAppProps {
   projects?: Project[];
   milestones: ConstructionMilestone[];
   contacts?: ContactItem[];
+  units?: UnitDetail[];
+  mappedUnits?: UnidadMapeada[];
+  volumetria?: ObraVolumetria;
   isEmbeddedInSimulator?: boolean;
   onAdminAccess?: () => void;
   onLoginSuccess?: (user: User) => void;
@@ -31,6 +34,9 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
   projects = INITIAL_PROJECTS,
   milestones,
   contacts,
+  units = [],
+  mappedUnits = [],
+  volumetria,
   isEmbeddedInSimulator = false,
   onAdminAccess,
   onLoginSuccess,
@@ -90,6 +96,9 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
           <ProjectCommercialDetail
             project={selectedProjectForDetail}
             user={user || ({} as User)}
+            units={units}
+            mappedUnits={mappedUnits}
+            volumetria={volumetria}
             onBack={handleBackFromDetail}
             onExpandImage={(url) => setFullscreenPhoto(url)}
           />
