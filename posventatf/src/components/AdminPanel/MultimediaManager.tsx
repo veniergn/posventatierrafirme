@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MediaUploadItem, AuditLog } from '../../types';
+import { MediaUploadItem, AuditLog, Project } from '../../types';
 import { 
   UploadCloud, 
   FileText, 
@@ -16,6 +16,7 @@ import { FileDropzone } from '../FileDropzone';
 
 interface MultimediaManagerProps {
   uploads: MediaUploadItem[];
+  projects: Project[];
   onAddUpload: (item: MediaUploadItem) => void;
   onDeleteUpload: (id: string) => void;
   onOpenAuditLogs: () => void;
@@ -25,6 +26,7 @@ interface MultimediaManagerProps {
 
 export const MultimediaManager: React.FC<MultimediaManagerProps> = ({
   uploads,
+  projects,
   onAddUpload,
   onDeleteUpload,
   onOpenAuditLogs,
@@ -32,7 +34,7 @@ export const MultimediaManager: React.FC<MultimediaManagerProps> = ({
   currentStaffRole
 }) => {
   const [selectedType, setSelectedType] = useState<'render' | 'blueprint' | 'progress'>('progress');
-  const [selectedComplex, setSelectedComplex] = useState('Complejo Terrazas');
+  const [selectedComplex, setSelectedComplex] = useState(projects[0]?.name || '');
   const [uploadedUrl, setUploadedUrl] = useState<string>('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -156,12 +158,10 @@ export const MultimediaManager: React.FC<MultimediaManagerProps> = ({
                 onChange={(e) => setSelectedComplex(e.target.value)}
                 className="w-full py-2.5 px-3 border border-[#8C716D]/30 rounded-lg text-sm bg-white outline-none focus:border-[#8E1E19]"
               >
-                <option value="Complejo Terrazas">Complejo Terrazas</option>
-                <option value="Torre A - Norte">Torre A - Norte</option>
-                <option value="Proyecto Vista Real">Proyecto Vista Real</option>
-                <option value="Altura Residences">Altura Residences</option>
-                <option value="Madero Boutique">Madero Boutique</option>
-                <option value="Distrito Palermo">Distrito Palermo</option>
+                <option value="">Selecciona un desarrollo</option>
+                {projects.map((p) => (
+                  <option key={p.id} value={p.name}>{p.name}</option>
+                ))}
               </select>
             </div>
           </div>

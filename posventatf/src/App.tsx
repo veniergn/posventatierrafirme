@@ -525,6 +525,7 @@ export default function App() {
             {currentView === 'admin_multimedia' && (
               <MultimediaManager
                 uploads={uploads}
+                projects={projects}
                 onAddUpload={handleAddUpload}
                 onDeleteUpload={handleDeleteUpload}
                 onOpenAuditLogs={() => setIsAuditLogsModalOpen(true)}

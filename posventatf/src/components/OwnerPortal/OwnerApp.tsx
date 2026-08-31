@@ -74,9 +74,8 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
     <div className={`flex flex-col bg-[#FAF9FB] text-[#1B1C1E] min-h-full ${isEmbeddedInSimulator ? 'h-[750px] overflow-y-auto' : 'min-h-screen'}`}>
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white px-4 sm:px-6 py-4 flex items-center justify-between shadow-[0_2px_10px_rgba(0,0,0,0.03)]">
-        <div className="font-sans font-semibold text-lg tracking-tight">
-          <span className="text-[#1B1C1E]">Tierra</span>
-          <span className="text-[#8E1E19]">Firme</span>
+        <div className="flex items-center">
+          <img src="/logo-tf.png" alt="Tierra Firme" className="h-8 object-contain" />
         </div>
         
         <div className="flex items-center">
@@ -98,7 +97,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
             user={user || ({} as User)}
             units={units}
             mappedUnits={mappedUnits}
-            volumetria={volumetria}
+            volumetria={volumetria ? { ...volumetria, imagen_url: selectedProjectForDetail.image || volumetria.imagen_url } : undefined}
             onBack={handleBackFromDetail}
             onExpandImage={(url) => setFullscreenPhoto(url)}
           />
