@@ -4,6 +4,8 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, Key, Building2, Shield } from 'luc
 import { User } from '../../types';
 import { api } from '../../lib/api';
 
+import { sounds } from '../../lib/sounds';
+
 interface OwnerPublicLoginProps {
   onLoginSuccess: (user: User) => void;
   onNavigateToActivation?: () => void;
@@ -23,6 +25,7 @@ export const OwnerPublicLogin: React.FC<OwnerPublicLoginProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    sounds.playLoginClick();
     setErrorMsg('');
     setIsLoading(true);
 
@@ -30,6 +33,7 @@ export const OwnerPublicLogin: React.FC<OwnerPublicLoginProps> = ({
       const user = await api.loginOwner(email, password);
       
       if (user) {
+        sounds.playTransitionSpace();
         onLoginSuccess(user as User);
       } else {
         setErrorMsg('Credenciales incorrectas o usuario no encontrado.');

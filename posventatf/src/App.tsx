@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { sounds } from './lib/sounds';
 import { 
   User, 
   Project, 
@@ -113,6 +114,11 @@ export default function App() {
       }),
       entityType
     };
+
+    if (action !== 'Activación de Cuenta Exitosa') {
+      sounds.playSaveSuccess();
+    }
+
     setAuditLogs((prev) => [newLog, ...prev]);
   };
 
@@ -425,6 +431,7 @@ export default function App() {
         alert("Hubo un error al activar el usuario en la nube.");
       }
     }
+    sounds.playTransitionSpace();
     setCurrentView('owner_portal');
   };
 
@@ -593,8 +600,11 @@ export default function App() {
           <OwnerLoginPage
             onLoginSuccess={(email) => {
               const foundUser = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
-              if (foundUser) setSelectedUserForPreview(foundUser);
-              setCurrentView('owner_portal');
+              if (foundUser) {
+                setSelectedUserForPreview(foundUser);
+                sounds.playTransitionSpace();
+                setCurrentView('owner_portal');
+              }
             }}
             onNavigateToActivation={() => setCurrentView('activation_screen')}
             onQuickLoginAsAdmin={() => setCurrentView('admin_users')}
