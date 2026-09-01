@@ -358,9 +358,14 @@ export default function App() {
       await api.createMediaUpload({
         id: 'global_cover_image',
         url,
-        name: 'Portada Global de la App',
+        fileName: 'Portada Global de la App',
         type: 'render',
-        date: new Date().toISOString()
+        size: '0 MB',
+        timestamp: new Date().toISOString(),
+        uploadedBy: 'Sistema',
+        uploadedByRole: 'admin',
+        status: 'synced',
+        complexName: 'Global'
       });
     } catch (err) {
       console.error('Error guardando portada global en Supabase:', err);
