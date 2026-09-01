@@ -21,6 +21,7 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(currentImage || null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -87,10 +88,10 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
-        onClick={() => document.getElementById('file-upload')?.click()}
+        onClick={() => fileInputRef.current?.click()}
       >
         <input
-          id="file-upload"
+          ref={fileInputRef}
           type="file"
           className="hidden"
           accept={accept}

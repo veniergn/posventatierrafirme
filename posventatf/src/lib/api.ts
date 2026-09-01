@@ -93,21 +93,28 @@ export const api = {
     try {
       const { data, error } = await supabase.from('units').select('*');
       if (error) throw error;
-      return data as UnitDetail[];
+      return (data || []).map((u: any) => ({
+        ...u,
+        unitNumber: u.unitnumber || u.unitNumber
+      })) as UnitDetail[];
     } catch (err) {
       console.error('Error fetching units from Supabase:', err);
       return null;
     }
   },
   async createUnit(unit: UnitDetail) {
-    const { data, error } = await supabase.from('units').insert(unit).select().single();
+    const { unitNumber, ...rest } = unit;
+    const dbUnit = { ...rest, unitnumber: unitNumber };
+    const { data, error } = await supabase.from('units').insert(dbUnit).select().single();
     if (error) throw error;
-    return data;
+    return { ...data, unitNumber: data.unitnumber || data.unitNumber };
   },
   async updateUnit(unit: UnitDetail) {
-    const { data, error } = await supabase.from('units').update(unit).eq('id', unit.id).select().single();
+    const { unitNumber, ...rest } = unit;
+    const dbUnit = { ...rest, unitnumber: unitNumber };
+    const { data, error } = await supabase.from('units').update(dbUnit).eq('id', unit.id).select().single();
     if (error) throw error;
-    return data;
+    return { ...data, unitNumber: data.unitnumber || data.unitNumber };
   },
   async deleteUnit(unitId: string) {
     const { error } = await supabase.from('units').delete().eq('id', unitId);
