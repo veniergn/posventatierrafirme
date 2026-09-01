@@ -131,6 +131,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
             {activeTab === 'unidad' && (
               !user ? (
                 <OwnerPublicLogin 
+                  globalCoverImage={globalCoverImage}
                   onLoginSuccess={(u) => {
                     if (onLoginSuccess) onLoginSuccess(u);
                   }}

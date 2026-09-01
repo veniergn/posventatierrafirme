@@ -10,12 +10,14 @@ interface OwnerPublicLoginProps {
   onLoginSuccess: (user: User) => void;
   onNavigateToActivation?: () => void;
   onQuickLoginAsAdmin?: () => void;
+  globalCoverImage?: string;
 }
 
 export const OwnerPublicLogin: React.FC<OwnerPublicLoginProps> = ({ 
   onLoginSuccess,
   onNavigateToActivation,
-  onQuickLoginAsAdmin
+  onQuickLoginAsAdmin,
+  globalCoverImage
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -174,7 +176,7 @@ export const OwnerPublicLogin: React.FC<OwnerPublicLoginProps> = ({
       {/* Right Column: Architectural Render Hero */}
       <div className="hidden md:block md:w-1/2 lg:w-7/12 relative bg-black overflow-hidden flex-1">
         <img
-          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+          src={globalCoverImage || "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"}
           alt="Tierra Firme Portal"
           referrerPolicy="no-referrer"
           className="w-full h-full object-cover opacity-85"
