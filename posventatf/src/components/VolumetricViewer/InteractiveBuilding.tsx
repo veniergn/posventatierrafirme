@@ -22,9 +22,6 @@ export const InteractiveBuilding: React.FC<InteractiveBuildingProps> = ({
     const unit = units.find(u => u.id === mapping.unidad_id);
     if (unit) {
       setSelectedUnit(unit);
-      if (onSelectUnit) {
-        onSelectUnit(unit);
-      }
     }
   };
 
@@ -65,10 +62,10 @@ export const InteractiveBuilding: React.FC<InteractiveBuildingProps> = ({
               <polygon
                 key={mapping.id}
                 points={points}
-                fill={isHovered || isSelected ? 'rgba(142, 30, 25, 0.4)' : 'rgba(142, 30, 25, 0.0)'}
-                stroke={isHovered || isSelected ? '#8E1E19' : 'rgba(255, 255, 255, 0.3)'}
-                strokeWidth={isHovered || isSelected ? "3" : "1"}
-                className="cursor-pointer transition-all duration-300 hover:drop-shadow-[0_0_8px_rgba(142,30,25,0.8)]"
+                fill={isHovered || isSelected ? 'rgba(255, 255, 255, 0.4)' : 'transparent'}
+                stroke={isHovered || isSelected ? '#FFFFFF' : 'transparent'}
+                strokeWidth={isHovered || isSelected ? "3" : "0"}
+                className="cursor-pointer transition-all duration-300 hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]"
                 onMouseEnter={() => setHoveredUnit(mapping.id)}
                 onMouseLeave={() => setHoveredUnit(null)}
                 onClick={() => handleUnitClick(mapping)}
@@ -118,9 +115,15 @@ export const InteractiveBuilding: React.FC<InteractiveBuildingProps> = ({
             </div>
 
             <div className="flex gap-3">
-              <button className="flex-1 py-3 bg-[#1B1C1E] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-black transition-colors">
+              <button 
+                onClick={() => {
+                  if (onSelectUnit) onSelectUnit(selectedUnit);
+                  setSelectedUnit(null);
+                }}
+                className="flex-1 py-3 bg-[#1B1C1E] text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-black transition-colors"
+              >
                 <ExternalLink className="w-4 h-4" />
-                Ver Planos y Detalles
+                Ver Planos e Imágenes
               </button>
             </div>
           </div>

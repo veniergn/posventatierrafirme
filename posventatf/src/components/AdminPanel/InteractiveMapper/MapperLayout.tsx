@@ -2,6 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { UnitDetail, Project, UnidadMapeada } from '../../../types';
 import { MousePointerClick, Save, Trash2, Undo, CheckCircle2, Image as ImageIcon, MapPin } from 'lucide-react';
 import { FileDropzone } from '../../FileDropzone';
+import { AdminUnitMediaModal } from './AdminUnitMediaModal';
+
+const POLYGON_COLORS = [
+  '#FF3B30', '#FF9500', '#FFCC00', '#4CD964', 
+  '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55'
+];
 
 interface Point {
   x: number;
@@ -33,6 +39,7 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
   const [selectedUnitId, setSelectedUnitId] = useState<string>('');
   const [hoveredPoly, setHoveredPoly] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState<Point | null>(null);
+  const [selectedUnitForMedia, setSelectedUnitForMedia] = useState<UnitDetail | null>(null);
   
   const svgRef = useRef<SVGSVGElement>(null);
   
@@ -194,24 +201,32 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
               preserveAspectRatio="none"
             >
               {/* Existing Mapped Units */}
-              {visibleMappedUnits.map((mapping) => {
+              {visibleMappedUnits.map((mapping, index) => {
                 const points = mapping.polygon_points.split(' ').map(p => {
                   const [x, y] = p.split(',');
                   return `${x}%,${y}%`;
                 }).join(' ');
                 
                 const isHovered = hoveredPoly === mapping.id;
+                const baseColor = POLYGON_COLORS[index % POLYGON_COLORS.length];
 
                 return (
                   <polygon
                     key={mapping.id}
                     points={points}
-                    fill={isHovered ? 'rgba(142, 30, 25, 0.4)' : 'rgba(142, 30, 25, 0.15)'}
-                    stroke={isHovered ? '#8E1E19' : 'rgba(142, 30, 25, 0.5)'}
+                    fill={isHovered ? baseColor : `${baseColor}40`}
+                    stroke={baseColor}
                     strokeWidth="2"
                     onMouseEnter={() => setHoveredPoly(mapping.id)}
                     onMouseLeave={() => setHoveredPoly(null)}
-                    className="transition-all duration-200 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!isDrawing) {
+                        const unit = units.find(u => u.id === mapping.unidad_id);
+                        if (unit) setSelectedUnitForMedia(unit);
+                      }
+                    }}
+                    className={`transition-all duration-200 ${!isDrawing ? 'cursor-pointer hover:opacity-100' : ''}`}
                   />
                 );
               })}

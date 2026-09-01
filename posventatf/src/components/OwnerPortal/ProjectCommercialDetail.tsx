@@ -526,21 +526,28 @@ export const ProjectCommercialDetail: React.FC<ProjectCommercialDetailProps> = (
               </div>
 
               <div className="bg-[#FAF9FB] p-4 rounded-xl border border-[#E0E3E7] space-y-2">
-                <span className="font-bold text-[#1B1C1E] block">Renders y Planos Técnicos</span>
+                <span className="font-bold text-[#1B1C1E] block">Imágenes del Departamento</span>
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   {selectedUnitDetail.mainRender && (
                     <button onClick={() => onExpandImage && onExpandImage(selectedUnitDetail.mainRender)} className="p-2 bg-white rounded border border-[#E0E3E7] text-[#8E1E19] font-bold flex items-center gap-1.5 hover:bg-gray-50">
-                      <Maximize2 className="w-3.5 h-3.5" /> Ver Render Principal
+                      <Maximize2 className="w-3.5 h-3.5" /> Render Principal
+                    </button>
+                  )}
+                  {selectedUnitDetail.blueprint && (
+                    <button onClick={() => onExpandImage && onExpandImage(selectedUnitDetail.blueprint)} className="p-2 bg-white rounded border border-[#E0E3E7] text-[#8E1E19] font-bold flex items-center gap-1.5 hover:bg-gray-50">
+                      <Maximize2 className="w-3.5 h-3.5" /> Planta
                     </button>
                   )}
                   {selectedUnitDetail.livingRender && (
                     <button onClick={() => onExpandImage && onExpandImage(selectedUnitDetail.livingRender)} className="p-2 bg-white rounded border border-[#E0E3E7] text-[#8E1E19] font-bold flex items-center gap-1.5 hover:bg-gray-50">
-                      <Maximize2 className="w-3.5 h-3.5" /> Ver Render Living
+                      <Maximize2 className="w-3.5 h-3.5" /> Vistas
                     </button>
                   )}
-                  <a href={selectedUnitDetail.blueprintPdfUrl} className="p-2 bg-white rounded border border-[#E0E3E7] text-[#5B5F63] font-bold flex items-center gap-1.5 hover:bg-gray-50">
-                    <FileText className="w-3.5 h-3.5" /> Plano Arquitectónico
-                  </a>
+                  {selectedUnitDetail.masterBedroomRender && (
+                    <button onClick={() => onExpandImage && onExpandImage(selectedUnitDetail.masterBedroomRender)} className="p-2 bg-white rounded border border-[#E0E3E7] text-[#8E1E19] font-bold flex items-center gap-1.5 hover:bg-gray-50">
+                      <Maximize2 className="w-3.5 h-3.5" /> Croquis
+                    </button>
+                  )}
                 </div>
               </div>
 
