@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, StaffRole, StaffPermission } from '../../types';
+import { User, StaffRole, StaffPermission, Project } from '../../types';
 import { X, Save, RefreshCw, Key } from 'lucide-react';
 
 interface EditUserModalProps {
@@ -8,6 +8,7 @@ interface EditUserModalProps {
   onClose: () => void;
   onUpdate: (updatedUser: User) => void;
   onResendCode: (user: User) => void;
+  projects?: Project[];
 }
 
 export const EditUserModal: React.FC<EditUserModalProps> = ({
@@ -15,7 +16,8 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
   isOpen,
   onClose,
   onUpdate,
-  onResendCode
+  onResendCode,
+  projects = []
 }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -155,12 +157,15 @@ export const EditUserModal: React.FC<EditUserModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-[#1B1C1E] mb-1">Complejo</label>
-                  <input
-                    type="text"
+                  <select
                     value={complex}
                     onChange={(e) => setComplex(e.target.value)}
-                    className="w-full px-3.5 py-2 border border-[#8C716D]/40 rounded-lg text-sm focus:border-[#8E1E19] outline-none"
-                  />
+                    className="w-full px-3.5 py-2 border border-[#8C716D]/40 rounded-lg text-sm focus:border-[#8E1E19] outline-none bg-white"
+                  >
+                    {projects.map((project) => (
+                      <option key={project.id} value={project.name}>{project.name}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-[#1B1C1E] mb-1">Unidad</label>

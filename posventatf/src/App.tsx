@@ -676,6 +676,7 @@ export default function App() {
         isOpen={isNewUserModalOpen}
         onClose={() => setIsNewUserModalOpen(false)}
         onSave={handleCreateUser}
+        projects={projects}
       />
 
       {/* 2. Modal: Editar Usuario Existente */}
@@ -685,6 +686,7 @@ export default function App() {
         onClose={() => setEditingUser(null)}
         onUpdate={handleUpdateUser}
         onResendCode={handleResendCode}
+        projects={projects}
       />
 
       {/* 3. Modal: Visor de Correo Disparado */}

@@ -1,17 +1,19 @@
-import React, { useState } from 'react';
-import { User, UserRole, StaffRole, StaffPermission } from '../../types';
+import React, { useState, useEffect } from 'react';
+import { User, UserRole, StaffRole, StaffPermission, Project } from '../../types';
 import { Key, BadgeCheck, X, Sparkles, Send } from 'lucide-react';
 
 interface NewUserModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (user: User) => void;
+  projects?: Project[];
 }
 
 export const NewUserModal: React.FC<NewUserModalProps> = ({
   isOpen,
   onClose,
-  onSave
+  onSave,
+  projects = []
 }) => {
   const [role, setRole] = useState<UserRole>('propietario');
   const [name, setName] = useState('');
@@ -20,14 +22,20 @@ export const NewUserModal: React.FC<NewUserModalProps> = ({
   const [phone, setPhone] = useState('');
   
   // Propietario conditional fields
-  const [complex, setComplex] = useState('Complejo Terrazas');
-  const [unit, setUnit] = useState('Unidad 4° B');
+  const [complex, setComplex] = useState(projects[0]?.name || '');
+  const [unit, setUnit] = useState('Unidad 4º B');
   const [parking, setParking] = useState('Cochera N° 12');
   const [storage, setStorage] = useState('Baulera B-04');
 
   // Staff conditional fields
   const [staffRole, setStaffRole] = useState<StaffRole>('Director de Obra');
   const [permissions, setPermissions] = useState<StaffPermission>('admin');
+
+  useEffect(() => {
+    if (isOpen && projects.length > 0 && !complex) {
+      setComplex(projects[0].name);
+    }
+  }, [isOpen, projects, complex]);
 
   if (!isOpen) return null;
 
@@ -236,12 +244,9 @@ export const NewUserModal: React.FC<NewUserModalProps> = ({
                       onChange={(e) => setComplex(e.target.value)}
                       className="w-full px-4 py-2.5 border border-[#8C716D]/40 rounded-lg text-sm focus:border-[#8E1E19] focus:ring-2 focus:ring-[#8E1E19]/20 outline-none bg-white"
                     >
-                      <option value="Complejo Terrazas">Complejo Terrazas</option>
-                      <option value="Torre A - Norte">Torre A - Norte</option>
-                      <option value="Proyecto Vista Real">Proyecto Vista Real</option>
-                      <option value="Altura Residences">Altura Residences</option>
-                      <option value="Madero Boutique">Madero Boutique</option>
-                      <option value="Distrito Palermo">Distrito Palermo</option>
+                      {projects.map((project) => (
+                        <option key={project.id} value={project.name}>{project.name}</option>
+                      ))}
                     </select>
                   </div>
 
