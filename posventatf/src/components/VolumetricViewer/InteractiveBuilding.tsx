@@ -38,41 +38,41 @@ export const InteractiveBuilding: React.FC<InteractiveBuildingProps> = ({
       </div>
 
       {/* Main Interactive Area */}
-      <div className="flex-1 relative w-full h-full overflow-hidden touch-pan-y">
-        <img 
-          src={volumetria.imagen_url} 
-          alt={volumetria.nombre}
-          className="absolute inset-0 w-full h-full object-contain pointer-events-none"
-        />
-
-        <svg 
-          className="absolute inset-0 w-full h-full"
-          preserveAspectRatio="none"
-        >
-          {mappedUnits.filter(m => m.volumetria_id === volumetria.id).map(mapping => {
-            const points = mapping.polygon_points.split(' ').map(p => {
-              const [x, y] = p.split(',');
-              return `${x}%,${y}%`;
-            }).join(' ');
-
-            const isHovered = hoveredUnit === mapping.id;
-            const isSelected = selectedUnit?.id === mapping.unidad_id;
-
-            return (
-              <polygon
-                key={mapping.id}
-                points={points}
-                fill={isHovered || isSelected ? 'rgba(255, 255, 255, 0.4)' : 'transparent'}
-                stroke={isHovered || isSelected ? '#FFFFFF' : 'transparent'}
-                strokeWidth={isHovered || isSelected ? "3" : "0"}
-                className="cursor-pointer transition-all duration-300 hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]"
-                onMouseEnter={() => setHoveredUnit(mapping.id)}
-                onMouseLeave={() => setHoveredUnit(null)}
-                onClick={() => handleUnitClick(mapping)}
-              />
-            );
-          })}
-        </svg>
+      <div className="flex-1 relative w-full h-full overflow-hidden touch-pan-y bg-black flex items-center justify-center">
+        <div className="relative inline-block max-w-full max-h-full">
+          <img 
+            src={volumetria.imagen_url} 
+            alt={volumetria.nombre}
+            className="max-w-full max-h-[75vh] object-contain pointer-events-none opacity-90"
+          />
+  
+          <svg 
+            className="absolute inset-0 w-full h-full"
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+          >
+            {mappedUnits.filter(m => m.volumetria_id === volumetria.id).map(mapping => {
+              const points = mapping.polygon_points;
+  
+              const isHovered = hoveredUnit === mapping.id;
+              const isSelected = selectedUnit?.id === mapping.unidad_id;
+  
+              return (
+                <polygon
+                  key={mapping.id}
+                  points={points}
+                  fill={isHovered || isSelected ? 'rgba(255, 255, 255, 0.4)' : 'transparent'}
+                  stroke={isHovered || isSelected ? '#FFFFFF' : 'transparent'}
+                  strokeWidth={isHovered || isSelected ? "0.5" : "0"}
+                  className="cursor-pointer transition-all duration-300 hover:drop-shadow-[0_0_12px_rgba(255,255,255,0.8)]"
+                  onMouseEnter={() => setHoveredUnit(mapping.id)}
+                  onMouseLeave={() => setHoveredUnit(null)}
+                  onClick={() => handleUnitClick(mapping)}
+                />
+              );
+            })}
+          </svg>
+        </div>
       </div>
 
       {/* Bottom Sheet Modal for Selected Unit */}

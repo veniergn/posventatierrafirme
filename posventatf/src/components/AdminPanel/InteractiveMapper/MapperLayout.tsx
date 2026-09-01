@@ -183,29 +183,28 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
           </div>
 
           {/* Canvas Area */}
-          <div className="flex-1 relative overflow-hidden bg-gray-100 cursor-crosshair group">
-            {/* Base Image */}
-            <img 
-              src={imgUrl} 
-              alt="Volumetria" 
-              className="absolute inset-0 w-full h-full object-contain pointer-events-none"
-            />
-            
-            {/* SVG Overlay for Polygons */}
-            <svg 
-              ref={svgRef}
-              className="absolute inset-0 w-full h-full"
-              onClick={handleSvgClick}
-              onMouseMove={handleMouseMove}
-              onMouseLeave={handleMouseLeave}
-              preserveAspectRatio="none"
-            >
+          <div className="flex-1 relative overflow-hidden bg-black flex items-center justify-center cursor-crosshair group">
+            <div className="relative inline-block max-w-full max-h-full">
+              {/* Base Image */}
+              <img 
+                src={imgUrl} 
+                alt="Volumetria" 
+                className="max-w-full max-h-[75vh] object-contain pointer-events-none opacity-90"
+              />
+              
+              {/* SVG Overlay for Polygons */}
+              <svg 
+                ref={svgRef}
+                className="absolute inset-0 w-full h-full"
+                viewBox="0 0 100 100"
+                onClick={handleSvgClick}
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                preserveAspectRatio="none"
+              >
               {/* Existing Mapped Units */}
               {visibleMappedUnits.map((mapping, index) => {
-                const points = mapping.polygon_points.split(' ').map(p => {
-                  const [x, y] = p.split(',');
-                  return `${x}%,${y}%`;
-                }).join(' ');
+                const points = mapping.polygon_points;
                 
                 const isHovered = hoveredPoly === mapping.id;
                 const baseColor = POLYGON_COLORS[index % POLYGON_COLORS.length];
@@ -235,32 +234,33 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
               {isDrawing && currentPolygon.length > 0 && (
                 <>
                   <polygon
-                    points={[...currentPolygon, ...(mousePos ? [mousePos] : [])].map(p => `${p.x}%,${p.y}%`).join(' ')}
+                    points={[...currentPolygon, ...(mousePos ? [mousePos] : [])].map(p => `${p.x},${p.y}`).join(' ')}
                     fill="rgba(37, 211, 102, 0.2)"
                     stroke="#25D366"
-                    strokeWidth="2"
-                    strokeDasharray="4"
+                    strokeWidth="0.5"
+                    strokeDasharray="1"
                   />
                   {currentPolygon.map((p, i) => (
                     <circle
                       key={i}
-                      cx={`${p.x}%`}
-                      cy={`${p.y}%`}
-                      r="4"
+                      cx={p.x}
+                      cy={p.y}
+                      r="1"
                       fill="#25D366"
                     />
                   ))}
                   {mousePos && (
                     <circle
-                      cx={`${mousePos.x}%`}
-                      cy={`${mousePos.y}%`}
-                      r="4"
+                      cx={mousePos.x}
+                      cy={mousePos.y}
+                      r="1"
                       fill="rgba(37, 211, 102, 0.5)"
                     />
                   )}
                 </>
               )}
             </svg>
+            </div>
           </div>
         </div>
 
