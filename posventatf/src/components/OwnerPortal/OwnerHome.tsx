@@ -9,6 +9,7 @@ interface OwnerHomeProps {
   onNavigateToMyUnit: () => void;
   onSelectProjectDetail: (project: Project) => void;
   onExpandImage?: (url: string) => void;
+  globalCoverImage?: string;
 }
 
 export const OwnerHome: React.FC<OwnerHomeProps> = ({
@@ -16,6 +17,7 @@ export const OwnerHome: React.FC<OwnerHomeProps> = ({
   projects,
   onNavigateToMyUnit,
   onSelectProjectDetail,
+  globalCoverImage
 }) => {
   // Find current user's project
   const userProject = projects.find(
@@ -23,8 +25,7 @@ export const OwnerHome: React.FC<OwnerHomeProps> = ({
            (user?.complex || '').toLowerCase().includes(p.name.toLowerCase())
   ) || projects[0];
 
-  const globalCover = localStorage.getItem('globalCoverImage');
-  const mainImage = globalCover || userProject?.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
+  const mainImage = globalCoverImage || userProject?.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
 
   return (
     <div className="flex flex-col items-center animate-in fade-in duration-300 w-full overflow-hidden pb-12">

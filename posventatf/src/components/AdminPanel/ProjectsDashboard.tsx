@@ -32,6 +32,8 @@ interface ProjectsDashboardProps {
   onUpdateProjectDetails?: (updatedProject: Project) => void;
   onAddProject?: (newProject: Project) => void;
   onDeleteProject?: (projectId: string) => void;
+  globalCoverImage?: string;
+  onUpdateGlobalCover?: (url: string) => void;
 }
 
 export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
@@ -41,18 +43,14 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
   onUpdateProjectProgress,
   onUpdateProjectDetails,
   onAddProject,
-  onDeleteProject
+  onDeleteProject,
+  globalCoverImage,
+  onUpdateGlobalCover
 }) => {
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [tempProgress, setTempProgress] = useState<number>(0);
   const [editingProjectModal, setEditingProjectModal] = useState<Project | null>(null);
   const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
-  const [globalCoverImage, setGlobalCoverImage] = useState(() => localStorage.getItem('globalCoverImage') || '');
-
-  const handleUpdateGlobalCover = (url: string) => {
-    setGlobalCoverImage(url);
-    localStorage.setItem('globalCoverImage', url);
-  };
   const [deletingProject, setDeletingProject] = useState<Project | null>(null);
 
   // New Project Form State
@@ -222,7 +220,7 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
               </p>
               <div className="mt-3">
                 <FileDropzone 
-                  onUploadSuccess={handleUpdateGlobalCover}
+                  onUploadSuccess={onUpdateGlobalCover || (() => {})}
                   folder="settings"
                   label="Subir nueva portada global"
                   currentImage={globalCoverImage || projects[0]?.image}

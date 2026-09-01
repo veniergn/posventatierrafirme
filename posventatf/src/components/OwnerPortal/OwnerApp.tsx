@@ -24,6 +24,7 @@ interface OwnerAppProps {
   mappedUnits?: UnidadMapeada[];
   volumetria?: ObraVolumetria;
   isEmbeddedInSimulator?: boolean;
+  globalCoverImage?: string;
   onAdminAccess?: (user?: User) => void;
   onLoginSuccess?: (user: User) => void;
   onNavigateToActivation?: () => void;
@@ -38,6 +39,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
   mappedUnits = [],
   volumetria,
   isEmbeddedInSimulator = false,
+  globalCoverImage,
   onAdminAccess,
   onLoginSuccess,
   onNavigateToActivation
@@ -122,6 +124,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
                 onNavigateToMyUnit={() => handleTabChange('unidad')}
                 onSelectProjectDetail={handleSelectProjectDetail}
                 onExpandImage={(url) => setFullscreenPhoto(url)}
+                globalCoverImage={globalCoverImage}
               />
             )}
 

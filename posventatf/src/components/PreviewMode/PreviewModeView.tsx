@@ -18,6 +18,7 @@ interface PreviewModeViewProps {
   milestones: ConstructionMilestone[];
   onExitPreview: () => void;
   onSelectUserToPreview: (user: User) => void;
+  globalCoverImage?: string;
 }
 
 export const PreviewModeView: React.FC<PreviewModeViewProps> = ({
@@ -26,7 +27,8 @@ export const PreviewModeView: React.FC<PreviewModeViewProps> = ({
   projects,
   milestones,
   onExitPreview,
-  onSelectUserToPreview
+  onSelectUserToPreview,
+  globalCoverImage
 }) => {
   const [deviceMode, setDeviceMode] = useState<'mobile' | 'desktop'>('mobile');
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
@@ -130,6 +132,7 @@ export const PreviewModeView: React.FC<PreviewModeViewProps> = ({
                 projects={projects}
                 milestones={milestones}
                 isEmbeddedInSimulator={true}
+                globalCoverImage={globalCoverImage}
               />
             </div>
           </div>

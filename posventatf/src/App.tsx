@@ -52,6 +52,7 @@ export default function App() {
   const [contacts, setContacts] = useState<ContactItem[]>([]);
   const [mappedUnits, setMappedUnits] = useState<UnidadMapeada[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [globalCoverImage, setGlobalCoverImage] = useState<string>('');
 
   // Network listener
   useEffect(() => {
@@ -85,7 +86,11 @@ export default function App() {
         if (cloudUnits) setUnits(cloudUnits);
         if (cloudMappedUnits) setMappedUnits(cloudMappedUnits);
         if (cloudContacts) setContacts(cloudContacts);
-        if (cloudMedia) setUploads(cloudMedia);
+        if (cloudMedia) {
+          setUploads(cloudMedia);
+          const globalCoverObj = cloudMedia.find(m => m.id === 'global_cover_image');
+          if (globalCoverObj) setGlobalCoverImage(globalCoverObj.url);
+        }
       } catch (error) {
         console.error("Error loading data from cloud:", error);
       } finally {
@@ -331,14 +336,34 @@ export default function App() {
         await api.deleteMediaUpload(id);
         setUploads((prev) => prev.filter((u) => u.id !== id));
         logAction(
-          'Eliminación de Archivo',
-          `Eliminó "${item.fileName}" de la biblioteca multimedia`,
-          'media'
+          'Eliminación de Multimedia',
+          `Se eliminó el archivo: ${item.name}`,
+          'projects'
         );
       } catch (err) {
         console.error(err);
-        alert('Error eliminando el archivo en Supabase.');
+        alert('Error eliminando el archivo multimedia.');
       }
+    }
+  };
+
+  const handleUpdateGlobalCover = async (url: string) => {
+    setGlobalCoverImage(url);
+    try {
+      await api.deleteMediaUpload('global_cover_image');
+    } catch (e) {
+      // Ignorar si no existe
+    }
+    try {
+      await api.createMediaUpload({
+        id: 'global_cover_image',
+        url,
+        name: 'Portada Global de la App',
+        type: 'render',
+        date: new Date().toISOString()
+      });
+    } catch (err) {
+      console.error('Error guardando portada global en Supabase:', err);
     }
   };
 
@@ -517,6 +542,8 @@ export default function App() {
                 onUpdateProjectDetails={handleUpdateProjectDetails}
                 onAddProject={handleAddProject}
                 onDeleteProject={handleDeleteProject}
+                globalCoverImage={globalCoverImage}
+                onUpdateGlobalCover={handleUpdateGlobalCover}
               />
             )}
 
@@ -566,6 +593,7 @@ export default function App() {
             milestones={milestones}
             onExitPreview={() => setCurrentView('admin_users')}
             onSelectUserToPreview={(u) => setSelectedUserForPreview(u)}
+            globalCoverImage={globalCoverImage}
           />
         )}
 
@@ -581,6 +609,7 @@ export default function App() {
               contacts={contacts}
               units={units}
               mappedUnits={mappedUnits}
+              globalCoverImage={globalCoverImage}
               volumetria={{
                 id: 'vol-1',
                 nombre: 'Render Principal',
