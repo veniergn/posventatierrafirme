@@ -52,7 +52,7 @@ export const InteractiveBuilding: React.FC<InteractiveBuildingProps> = ({
           className="absolute inset-0 w-full h-full"
           preserveAspectRatio="none"
         >
-          {mappedUnits.map(mapping => {
+          {mappedUnits.filter(m => m.volumetria_id === volumetria.id).map(mapping => {
             const points = mapping.polygon_points.split(' ').map(p => {
               const [x, y] = p.split(',');
               return `${x}%,${y}%`;

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { UnitDetail, ObraVolumetria, UnidadMapeada } from '../../../types';
+import { UnitDetail, Project, UnidadMapeada } from '../../../types';
 import { MousePointerClick, Save, Trash2, Undo, CheckCircle2, Image as ImageIcon, MapPin } from 'lucide-react';
 import { FileDropzone } from '../../FileDropzone';
 
@@ -10,22 +10,24 @@ interface Point {
 
 interface MapperLayoutProps {
   units: UnitDetail[];
-  // Volumetric data
-  volumetria?: ObraVolumetria;
+  projects: Project[];
   mappedUnits: UnidadMapeada[];
   onSaveMappedUnit: (mapping: UnidadMapeada) => void;
   onDeleteMappedUnit: (id: string) => void;
-  onUpdateVolumetriaImage?: (url: string) => void;
+  onUpdateProjectDetails: (project: Project) => void;
+  onUpdateUnit?: (unit: UnitDetail) => void;
 }
 
 export const MapperLayout: React.FC<MapperLayoutProps> = ({
   units,
-  volumetria,
+  projects,
   mappedUnits,
   onSaveMappedUnit,
   onDeleteMappedUnit,
-  onUpdateVolumetriaImage
+  onUpdateProjectDetails,
+  onUpdateUnit
 }) => {
+  const [selectedProjectId, setSelectedProjectId] = useState<string>(projects[0]?.id || '');
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentPolygon, setCurrentPolygon] = useState<Point[]>([]);
   const [selectedUnitId, setSelectedUnitId] = useState<string>('');
@@ -34,8 +36,22 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
   
   const svgRef = useRef<SVGSVGElement>(null);
   
-  // Default placeholder if no volumetria is provided
-  const imgUrl = volumetria?.imagen_url || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=2000";
+  const selectedProject = projects.find(p => p.id === selectedProjectId);
+  const imgUrl = selectedProject?.image || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=2000";
+
+  // Filter mapped units to only show ones belonging to the selected project's volumetria
+  // We use `proj-${selectedProjectId}` as the volumetria_id by convention
+  const volumetriaId = `vol-${selectedProjectId}`;
+  const visibleMappedUnits = mappedUnits.filter(m => m.volumetria_id === volumetriaId);
+
+  // Filter units available for mapping to only those in the selected project
+  const availableUnits = units.filter(u => u.complexName === selectedProject?.name);
+
+  useEffect(() => {
+    if (projects.length > 0 && !selectedProjectId) {
+      setSelectedProjectId(projects[0].id);
+    }
+  }, [projects]);
 
   const getCoordinates = (e: React.MouseEvent<SVGSVGElement> | React.MouseEvent<HTMLDivElement>) => {
     const svg = svgRef.current;
@@ -87,7 +103,7 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
 
     const newMapping: UnidadMapeada = {
       id: `map-${Date.now()}`,
-      volumetria_id: volumetria?.id || 'default-vol',
+      volumetria_id: volumetriaId,
       unidad_id: selectedUnitId,
       polygon_points: pointsString,
       created_at: new Date().toISOString()
@@ -99,9 +115,29 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
 
   return (
     <div className="flex flex-col h-[calc(100vh-120px)] animate-in fade-in">
-      <div className="mb-4">
-        <h2 className="text-xl font-bold text-[#1B1C1E]">Mapeo Volumétrico Interactivo</h2>
-        <p className="text-sm text-[#5B5F63]">Dibuja polígonos sobre el render para hacerlos interactivos y vincularlos a unidades.</p>
+      <div className="mb-4 flex items-end justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-[#1B1C1E]">Mapeo Volumétrico Interactivo</h2>
+          <p className="text-sm text-[#5B5F63]">Dibuja polígonos sobre el render de tu proyecto para vincularlos a unidades.</p>
+        </div>
+        
+        {/* Project Selector */}
+        <div className="flex flex-col">
+          <label className="text-xs font-bold text-[#1B1C1E] mb-1">Seleccionar Obra/Proyecto</label>
+          <select
+            value={selectedProjectId}
+            onChange={(e) => {
+              setSelectedProjectId(e.target.value);
+              handleCancel();
+            }}
+            className="w-64 p-2 bg-white border border-[#E0E3E7] rounded-lg text-sm shadow-sm outline-none focus:border-[#8E1E19]"
+          >
+            {projects.length === 0 && <option value="">Sin proyectos</option>}
+            {projects.map(p => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="flex flex-1 gap-6 min-h-0">
@@ -113,7 +149,9 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsDrawing(!isDrawing)}
+                disabled={!selectedProject}
                 className={`px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-colors ${
+                  !selectedProject ? 'opacity-50 cursor-not-allowed bg-gray-200 text-gray-500' :
                   isDrawing ? 'bg-[#8E1E19] text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-100'
                 }`}
               >
@@ -133,7 +171,7 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
             
             <div className="text-xs text-gray-500 flex items-center gap-1">
               <ImageIcon className="w-4 h-4" />
-              Render Principal Activo
+              {selectedProject ? selectedProject.name : 'Ningún proyecto seleccionado'}
             </div>
           </div>
 
@@ -156,7 +194,7 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
               preserveAspectRatio="none"
             >
               {/* Existing Mapped Units */}
-              {mappedUnits.map((mapping) => {
+              {visibleMappedUnits.map((mapping) => {
                 const points = mapping.polygon_points.split(' ').map(p => {
                   const [x, y] = p.split(',');
                   return `${x}%,${y}%`;
@@ -212,106 +250,127 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
         </div>
 
         {/* RIGHT PANEL: Properties & Unit Linking */}
-        <div className="w-80 bg-white rounded-2xl shadow-sm border border-[#E0E3E7] overflow-y-auto flex flex-col">
-          {isDrawing ? (
-            <div className="p-5 space-y-4">
-              <h3 className="font-bold text-sm border-b pb-2">Propiedades del Nuevo Polígono</h3>
-              
-              <div className="bg-blue-50 p-3 rounded-xl border border-blue-100 text-xs text-blue-800">
-                Haz clic en la imagen para dibujar los vértices. Se requieren al menos 3 puntos.
-                <br/><br/>
-                Puntos actuales: <strong>{currentPolygon.length}</strong>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Vincular a Unidad Inmobiliaria</label>
-                <select 
-                  className="w-full text-sm border-gray-300 rounded-lg p-2.5 focus:ring-[#8E1E19]"
-                  value={selectedUnitId}
-                  onChange={(e) => setSelectedUnitId(e.target.value)}
-                >
-                  <option value="">-- Seleccionar Unidad --</option>
-                  {units.map(u => (
-                    <option key={u.id} value={u.id}>{u.complexName} - {u.unitNumber}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="pt-4 flex gap-2">
-                <button 
-                  onClick={handleSave}
-                  className="flex-1 bg-[#8E1E19] text-white py-2.5 rounded-lg text-xs font-bold flex justify-center items-center gap-2 hover:bg-[#6D0205]"
-                >
-                  <Save className="w-4 h-4"/> Guardar Mapeo
-                </button>
-                <button 
-                  onClick={handleCancel}
-                  className="px-4 bg-gray-100 text-gray-600 py-2.5 rounded-lg text-xs font-bold hover:bg-gray-200"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="p-5 space-y-6">
-              
-              {/* Background Image Upload Section */}
-              {onUpdateVolumetriaImage && (
-                <div className="space-y-2">
-                  <h3 className="font-bold text-sm border-b pb-2 flex justify-between items-center">
-                    <span>Fondo / Plano Base</span>
-                    <ImageIcon className="w-4 h-4 text-gray-400" />
-                  </h3>
-                  <FileDropzone 
-                    onUploadSuccess={(url) => {
-                      if (url) onUpdateVolumetriaImage(url);
-                    }}
-                    folder="mapper"
-                    label="Subir nuevo plano base"
-                  />
+        <div className="w-80 flex flex-col gap-4">
+          <div className="bg-white rounded-2xl shadow-sm border border-[#E0E3E7] overflow-y-auto flex flex-col flex-1">
+            {isDrawing ? (
+              <div className="p-5 space-y-4">
+                <h3 className="font-bold text-sm border-b pb-2">Propiedades del Nuevo Polígono</h3>
+                
+                <div className="bg-blue-50 p-3 rounded-xl border border-blue-100 text-xs text-blue-800">
+                  Haz clic en la imagen para dibujar los vértices. Se requieren al menos 3 puntos.
+                  <br/><br/>
+                  Puntos actuales: <strong>{currentPolygon.length}</strong>
                 </div>
-              )}
 
-              {/* Mapped Units Section */}
-              <div className="space-y-2">
-                <h3 className="font-bold text-sm border-b pb-2 flex justify-between items-center">
-                  <span>Unidades Mapeadas ({mappedUnits.length})</span>
-                  <MapPin className="w-4 h-4 text-gray-400" />
-                </h3>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Vincular a Unidad Inmobiliaria</label>
+                  <select 
+                    className="w-full text-sm border-gray-300 rounded-lg p-2.5 focus:ring-[#8E1E19]"
+                    value={selectedUnitId}
+                    onChange={(e) => setSelectedUnitId(e.target.value)}
+                  >
+                    <option value="">-- Seleccionar Unidad --</option>
+                    {units.map(u => (
+                      <option key={u.id} value={u.id}>{u.complexName} - {u.unitNumber}</option>
+                    ))}
+                  </select>
+                </div>
 
-                <div className="space-y-3">
-                {mappedUnits.map(mapping => {
-                  const unit = units.find(u => u.id === mapping.unidad_id);
-                  return (
-                    <div 
-                      key={mapping.id} 
-                      className="p-3 bg-gray-50 border border-gray-200 rounded-xl hover:border-[#8E1E19] transition-colors group"
-                      onMouseEnter={() => setHoveredPoly(mapping.id)}
-                      onMouseLeave={() => setHoveredPoly(null)}
-                    >
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="text-xs font-bold text-gray-900">{unit?.unitNumber || 'Unidad Desconocida'}</p>
-                          <p className="text-[10px] text-gray-500">{unit?.complexName}</p>
-                        </div>
-                        <button 
-                          onClick={() => { if(window.confirm('¿Eliminar este mapeo?')) onDeleteMappedUnit(mapping.id); }}
-                          className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                      <div className="mt-2 text-[10px] text-emerald-600 flex items-center gap-1 font-semibold">
-                        <CheckCircle2 className="w-3 h-3" /> Vinculado y Activo
-                      </div>
+                <div className="pt-4 flex gap-2">
+                  <button 
+                    onClick={handleSave}
+                    className="flex-1 bg-[#8E1E19] text-white py-2.5 rounded-lg text-xs font-bold flex justify-center items-center gap-2 hover:bg-[#6D0205]"
+                  >
+                    <Save className="w-4 h-4"/> Guardar Mapeo
+                  </button>
+                  <button 
+                    onClick={handleCancel}
+                    className="px-4 bg-gray-100 text-gray-600 py-2.5 rounded-lg text-xs font-bold hover:bg-gray-200"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="p-5 flex flex-col h-full">
+                <h3 className="font-bold text-sm border-b pb-2 mb-4">Unidades Mapeadas ({visibleMappedUnits.length})</h3>
+                
+                <div className="flex-1 overflow-y-auto space-y-2">
+                  {visibleMappedUnits.length === 0 ? (
+                    <div className="text-center text-gray-400 text-xs py-8">
+                      No hay unidades mapeadas en este proyecto. Haz clic en "Dibujar Nuevo Polígono" para comenzar.
                     </div>
-                  );
-                })}
-                {mappedUnits.length === 0 && (
-                  <p className="text-xs text-gray-500 text-center py-4">No hay áreas interactivas configuradas aún.</p>
-                )}
+                  ) : (
+                    visibleMappedUnits.map(mapping => {
+                      const unit = units.find(u => u.id === mapping.unidad_id);
+                      return (
+                        <div 
+                          key={mapping.id}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-[#E0E3E7] hover:border-[#8E1E19] transition-colors"
+                          onMouseEnter={() => setHoveredPoly(mapping.id)}
+                          onMouseLeave={() => setHoveredPoly(null)}
+                        >
+                          <div>
+                            <div className="font-bold text-sm text-[#1B1C1E]">{unit?.unitNumber || 'Unidad Desconocida'}</div>
+                            <div className="text-[10px] text-gray-500 flex items-center gap-1">
+                              <CheckCircle2 className="w-3 h-3 text-green-600" />
+                              Polígono vinculado
+                            </div>
+                          </div>
+                          <button 
+                            onClick={() => onDeleteMappedUnit(mapping.id)}
+                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Eliminar mapeo"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                        
+                        {/* Unit Image Editor - Expands when hovered or always visible */}
+                        {unit && hoveredPoly === mapping.id && onUpdateUnit && (
+                          <div 
+                            className="mt-2 p-3 bg-white rounded-lg border border-gray-200"
+                            onMouseEnter={() => setHoveredPoly(mapping.id)}
+                            onMouseLeave={() => setHoveredPoly(null)}
+                          >
+                            <label className="block text-[10px] font-bold text-gray-700 mb-2 uppercase">Imagen/Render de esta Unidad</label>
+                            <FileDropzone 
+                              onUploadSuccess={(url) => {
+                                onUpdateUnit({
+                                  ...unit,
+                                  mainRender: url
+                                });
+                              }}
+                              folder="units"
+                              label="Subir nueva foto"
+                              currentImage={unit.mainRender}
+                            />
+                          </div>
+                        )}
+                      </div>
+                      )
+                    })
+                  )}
                 </div>
               </div>
+            )}
+          </div>
+
+          {/* Project Image Editor */}
+          {selectedProject && !isDrawing && (
+            <div className="bg-white rounded-2xl shadow-sm border border-[#E0E3E7] p-5">
+              <h3 className="font-bold text-sm border-b pb-2 mb-3">Foto Volumétrica (Fondo)</h3>
+              <FileDropzone 
+                onUploadSuccess={(url) => {
+                  onUpdateProjectDetails({
+                    ...selectedProject,
+                    image: url
+                  });
+                }}
+                folder="projects"
+                label="Cambiar foto volumétrica de la obra"
+                currentImage={selectedProject.image}
+              />
             </div>
           )}
         </div>

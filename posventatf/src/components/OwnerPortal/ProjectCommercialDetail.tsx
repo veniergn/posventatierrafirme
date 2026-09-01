@@ -18,7 +18,8 @@ import {
   FileText,
   ShieldCheck,
   Building,
-  DollarSign
+  DollarSign,
+  X
 } from 'lucide-react';
 
 interface ProjectCommercialDetailProps {
@@ -46,6 +47,7 @@ export const ProjectCommercialDetail: React.FC<ProjectCommercialDetailProps> = (
   );
   const [isAdvisorModalOpen, setIsAdvisorModalOpen] = useState(false);
   const [downloadModalDoc, setDownloadModalDoc] = useState<string | null>(null);
+  const [selectedUnitDetail, setSelectedUnitDetail] = useState<UnitDetail | null>(null);
 
   const typologies = project.typologies || [];
   const selectedTypology = typologies.find((t) => t.id === selectedTypologyId) || typologies[0];
@@ -160,7 +162,7 @@ export const ProjectCommercialDetail: React.FC<ProjectCommercialDetailProps> = (
               volumetria={volumetria}
               mappedUnits={mappedUnits}
               units={units}
-              onSelectUnit={(unit) => console.log("Selected unit:", unit)}
+              onSelectUnit={(unit) => setSelectedUnitDetail(unit)}
             />
           ) : (
             <div className="h-[50vh] bg-gray-100 rounded-2xl flex items-center justify-center border border-gray-200">
@@ -478,6 +480,79 @@ export const ProjectCommercialDetail: React.FC<ProjectCommercialDetailProps> = (
             >
               Aceptar
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Unit Detail Modal */}
+      {selectedUnitDetail && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl border border-[#E0E3E7] flex flex-col">
+            <div className="relative h-48 bg-gray-100">
+              <img
+                src={selectedUnitDetail.mainRender}
+                alt={selectedUnitDetail.unitNumber}
+                className="w-full h-full object-cover"
+              />
+              <button
+                onClick={() => setSelectedUnitDetail(null)}
+                className="absolute top-3 right-3 p-1.5 bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="absolute bottom-3 left-4 text-white">
+                <span className="px-2.5 py-0.5 bg-[#8E1E19] text-white text-[10px] font-bold rounded uppercase">
+                  {selectedUnitDetail.status}
+                </span>
+                <h3 className="text-xl font-bold mt-1">{selectedUnitDetail.unitNumber}</h3>
+                <p className="text-xs text-gray-200">{selectedUnitDetail.complexName} • {selectedUnitDetail.address}</p>
+              </div>
+            </div>
+
+            <div className="p-6 space-y-4 text-xs">
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="bg-[#FAF9FB] p-3 rounded-xl border border-[#E0E3E7]">
+                  <span className="text-[10px] text-[#5B5F63] block font-bold">Superficie Total</span>
+                  <span className="font-extrabold text-sm text-[#1B1C1E]">{selectedUnitDetail.surfaceM2} m²</span>
+                </div>
+                <div className="bg-[#FAF9FB] p-3 rounded-xl border border-[#E0E3E7]">
+                  <span className="text-[10px] text-[#5B5F63] block font-bold">Dormitorios</span>
+                  <span className="font-extrabold text-sm text-[#1B1C1E]">{selectedUnitDetail.bedrooms}</span>
+                </div>
+                <div className="bg-[#FAF9FB] p-3 rounded-xl border border-[#E0E3E7]">
+                  <span className="text-[10px] text-[#5B5F63] block font-bold">Cochera & Baulera</span>
+                  <span className="font-extrabold text-sm text-[#1B1C1E]">{selectedUnitDetail.parking}</span>
+                </div>
+              </div>
+
+              <div className="bg-[#FAF9FB] p-4 rounded-xl border border-[#E0E3E7] space-y-2">
+                <span className="font-bold text-[#1B1C1E] block">Renders y Planos Técnicos</span>
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                  {selectedUnitDetail.mainRender && (
+                    <button onClick={() => onExpandImage && onExpandImage(selectedUnitDetail.mainRender)} className="p-2 bg-white rounded border border-[#E0E3E7] text-[#8E1E19] font-bold flex items-center gap-1.5 hover:bg-gray-50">
+                      <Maximize2 className="w-3.5 h-3.5" /> Ver Render Principal
+                    </button>
+                  )}
+                  {selectedUnitDetail.livingRender && (
+                    <button onClick={() => onExpandImage && onExpandImage(selectedUnitDetail.livingRender)} className="p-2 bg-white rounded border border-[#E0E3E7] text-[#8E1E19] font-bold flex items-center gap-1.5 hover:bg-gray-50">
+                      <Maximize2 className="w-3.5 h-3.5" /> Ver Render Living
+                    </button>
+                  )}
+                  <a href={selectedUnitDetail.blueprintPdfUrl} className="p-2 bg-white rounded border border-[#E0E3E7] text-[#5B5F63] font-bold flex items-center gap-1.5 hover:bg-gray-50">
+                    <FileText className="w-3.5 h-3.5" /> Plano Arquitectónico
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button
+                  onClick={() => setSelectedUnitDetail(null)}
+                  className="px-5 py-2 bg-[#8E1E19] text-white font-bold rounded-xl"
+                >
+                  Cerrar Detalles
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

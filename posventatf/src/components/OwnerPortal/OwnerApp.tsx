@@ -101,7 +101,14 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
             user={user || ({} as User)}
             units={units}
             mappedUnits={mappedUnits}
-            volumetria={volumetria ? { ...volumetria, imagen_url: selectedProjectForDetail.image || volumetria.imagen_url } : undefined}
+            volumetria={{
+              id: `vol-${selectedProjectForDetail.id}`,
+              nombre: 'Volumetría ' + selectedProjectForDetail.name,
+              imagen_url: selectedProjectForDetail.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=2000',
+              width_original: 1920,
+              height_original: 1080,
+              estado: 'Activo'
+            }}
             onBack={handleBackFromDetail}
             onExpandImage={(url) => setFullscreenPhoto(url)}
           />

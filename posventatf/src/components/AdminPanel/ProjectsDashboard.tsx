@@ -19,7 +19,8 @@ import {
   X, 
   Check,
   AlertTriangle,
-  FileText
+  FileText,
+  Image as ImageIcon
 } from 'lucide-react';
 import { FileDropzone } from '../FileDropzone';
 
@@ -46,6 +47,12 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
   const [tempProgress, setTempProgress] = useState<number>(0);
   const [editingProjectModal, setEditingProjectModal] = useState<Project | null>(null);
   const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
+  const [globalCoverImage, setGlobalCoverImage] = useState(() => localStorage.getItem('globalCoverImage') || '');
+
+  const handleUpdateGlobalCover = (url: string) => {
+    setGlobalCoverImage(url);
+    localStorage.setItem('globalCoverImage', url);
+  };
   const [deletingProject, setDeletingProject] = useState<Project | null>(null);
 
   // New Project Form State
@@ -201,6 +208,35 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
 
       {/* Projects List Grid */}
       <div className="space-y-4">
+        
+        {/* Global Cover Image Setting */}
+        <div className="bg-[#FAF9FB] rounded-xl border border-[#E0E3E7] p-5 shadow-sm">
+          <div className="flex flex-col sm:flex-row gap-6">
+            <div className="flex-1 space-y-2">
+              <h3 className="text-sm font-bold text-[#1B1C1E] flex items-center gap-2">
+                <ImageIcon className="w-4 h-4 text-[#8E1E19]" />
+                Foto de Portada Global de la App
+              </h3>
+              <p className="text-xs text-[#5B5F63] leading-relaxed">
+                Esta es la imagen principal que ven los propietarios y usuarios al ingresar a la plataforma, justo después del logo de carga. Puedes cambiarla arrastrando una nueva imagen.
+              </p>
+              <div className="mt-3">
+                <FileDropzone 
+                  onUploadSuccess={handleUpdateGlobalCover}
+                  folder="settings"
+                  label="Subir nueva portada global"
+                  currentImage={globalCoverImage || projects[0]?.image}
+                />
+              </div>
+            </div>
+            {globalCoverImage && (
+              <div className="w-full sm:w-64 h-32 rounded-xl overflow-hidden shadow-sm border border-[#E0E3E7] shrink-0">
+                <img src={globalCoverImage} alt="Portada Global" className="w-full h-full object-cover" />
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-[#1B1C1E]">Desarrollos Inmobiliarios</h2>
           <span className="text-xs text-[#5B5F63]">Gestión de volumetrías 3D, tipologías y comercialización</span>
@@ -633,14 +669,25 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                 </div>
               </div>
 
-              <div>
-                <label className="font-bold text-[#1B1C1E] block mb-1">Email de Contacto Comercial</label>
-                <input
-                  type="email"
-                  value={editingProjectModal.advisorEmail || ''}
-                  onChange={(e) => setEditingProjectModal({ ...editingProjectModal, advisorEmail: e.target.value })}
-                  className="w-full p-2.5 bg-[#FAF9FB] border border-[#E0E3E7] rounded-xl text-xs"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="font-bold text-[#1B1C1E] block mb-1">Email de Contacto Comercial</label>
+                  <input
+                    type="email"
+                    value={editingProjectModal.advisorEmail || ''}
+                    onChange={(e) => setEditingProjectModal({ ...editingProjectModal, advisorEmail: e.target.value })}
+                    className="w-full p-2.5 bg-[#FAF9FB] border border-[#E0E3E7] rounded-xl text-xs"
+                  />
+                </div>
+                <div>
+                  <label className="font-bold text-[#1B1C1E] block mb-1">Imagen de Portada / Render</label>
+                  <FileDropzone 
+                    onUploadSuccess={(url) => setEditingProjectModal({ ...editingProjectModal, image: url })}
+                    folder="projects"
+                    label="Subir nueva portada"
+                    currentImage={editingProjectModal.image}
+                  />
+                </div>
               </div>
 
               <div className="pt-2 flex justify-end gap-2">

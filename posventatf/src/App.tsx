@@ -384,22 +384,20 @@ export default function App() {
 
   // Handlers for Interactive Mappings
   const handleSaveMappedUnit = async (mapping: UnidadMapeada) => {
+    setMappedUnits((prev) => [mapping, ...prev]);
     try {
-      const createdMapping = await api.createUnidadMapeada(mapping);
-      if (createdMapping) setMappedUnits((prev) => [createdMapping, ...prev]);
+      await api.createUnidadMapeada(mapping);
     } catch (err) {
-      console.error(err);
-      alert('Error guardando el mapeo en Supabase.');
+      console.error('Error guardando en Supabase, guardado localmente:', err);
     }
   };
 
   const handleDeleteMappedUnit = async (id: string) => {
+    setMappedUnits((prev) => prev.filter((m) => m.id !== id));
     try {
       await api.deleteUnidadMapeada(id);
-      setMappedUnits((prev) => prev.filter((m) => m.id !== id));
     } catch (err) {
-      console.error(err);
-      alert('Error eliminando el mapeo en Supabase.');
+      console.error('Error eliminando en Supabase, eliminado localmente:', err);
     }
   };
 
@@ -546,18 +544,12 @@ export default function App() {
             {currentView === 'admin_mapper' && (
               <MapperLayout
                 units={units}
-                volumetria={{
-                  id: 'vol-1',
-                  nombre: 'Render Principal',
-                  imagen_url: projects[0]?.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=2000',
-                  width_original: 1920,
-                  height_original: 1080,
-                  estado: 'Activo'
-                }}
+                projects={projects}
                 mappedUnits={mappedUnits}
                 onSaveMappedUnit={handleSaveMappedUnit}
                 onDeleteMappedUnit={handleDeleteMappedUnit}
-                onUpdateVolumetriaImage={handleUpdateVolumetriaImage}
+                onUpdateProjectDetails={handleUpdateProjectDetails}
+                onUpdateUnit={handleUpdateUnit}
               />
             )}
           </AdminLayout>

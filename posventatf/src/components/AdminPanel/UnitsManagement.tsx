@@ -638,23 +638,19 @@ export const UnitsManagement: React.FC<UnitsManagementProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="text-[11px] text-[#5B5F63] block mb-1">Render Principal / Fachada</label>
-                    <input
-                      type="text"
-                      value={formData.mainRender || ''}
-                      onChange={(e) => setFormData({ ...formData, mainRender: e.target.value })}
-                      placeholder="URL de imagen"
-                      className="w-full p-2 bg-[#FAF9FB] border border-[#E0E3E7] rounded-lg text-xs"
+                    <FileDropzone
+                      onUploadSuccess={(url) => setFormData({ ...formData, mainRender: url })}
+                      folder="units"
+                      currentImage={formData.mainRender}
                     />
                   </div>
 
                   <div>
                     <label className="text-[11px] text-[#5B5F63] block mb-1">Render Living / Estar</label>
-                    <input
-                      type="text"
-                      value={formData.livingRender || ''}
-                      onChange={(e) => setFormData({ ...formData, livingRender: e.target.value })}
-                      placeholder="URL de imagen"
-                      className="w-full p-2 bg-[#FAF9FB] border border-[#E0E3E7] rounded-lg text-xs"
+                    <FileDropzone
+                      onUploadSuccess={(url) => setFormData({ ...formData, livingRender: url })}
+                      folder="units"
+                      currentImage={formData.livingRender}
                     />
                   </div>
                 </div>
