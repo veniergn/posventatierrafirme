@@ -304,50 +304,50 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
                     visibleMappedUnits.map(mapping => {
                       const unit = units.find(u => u.id === mapping.unidad_id);
                       return (
-                        <div 
-                          key={mapping.id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-[#E0E3E7] hover:border-[#8E1E19] transition-colors"
-                          onMouseEnter={() => setHoveredPoly(mapping.id)}
-                          onMouseLeave={() => setHoveredPoly(null)}
-                        >
-                          <div>
-                            <div className="font-bold text-sm text-[#1B1C1E]">{unit?.unitNumber || 'Unidad Desconocida'}</div>
-                            <div className="text-[10px] text-gray-500 flex items-center gap-1">
-                              <CheckCircle2 className="w-3 h-3 text-green-600" />
-                              Polígono vinculado
-                            </div>
-                          </div>
-                          <button 
-                            onClick={() => onDeleteMappedUnit(mapping.id)}
-                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Eliminar mapeo"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                        
-                        {/* Unit Image Editor - Expands when hovered or always visible */}
-                        {unit && hoveredPoly === mapping.id && onUpdateUnit && (
+                        <div key={mapping.id}>
                           <div 
-                            className="mt-2 p-3 bg-white rounded-lg border border-gray-200"
+                            className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-[#E0E3E7] hover:border-[#8E1E19] transition-colors"
                             onMouseEnter={() => setHoveredPoly(mapping.id)}
                             onMouseLeave={() => setHoveredPoly(null)}
                           >
-                            <label className="block text-[10px] font-bold text-gray-700 mb-2 uppercase">Imagen/Render de esta Unidad</label>
-                            <FileDropzone 
-                              onUploadSuccess={(url) => {
-                                onUpdateUnit({
-                                  ...unit,
-                                  mainRender: url
-                                });
-                              }}
-                              folder="units"
-                              label="Subir nueva foto"
-                              currentImage={unit.mainRender}
-                            />
+                            <div>
+                              <div className="font-bold text-sm text-[#1B1C1E]">{unit?.unitNumber || 'Unidad Desconocida'}</div>
+                              <div className="text-[10px] text-gray-500 flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3 text-green-600" />
+                                Polígono vinculado
+                              </div>
+                            </div>
+                            <button 
+                              onClick={() => onDeleteMappedUnit(mapping.id)}
+                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              title="Eliminar mapeo"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
                           </div>
-                        )}
-                      </div>
+                          
+                          {/* Unit Image Editor - Expands when hovered or always visible */}
+                          {unit && hoveredPoly === mapping.id && onUpdateUnit && (
+                            <div 
+                              className="mt-2 p-3 bg-white rounded-lg border border-gray-200"
+                              onMouseEnter={() => setHoveredPoly(mapping.id)}
+                              onMouseLeave={() => setHoveredPoly(null)}
+                            >
+                              <label className="block text-[10px] font-bold text-gray-700 mb-2 uppercase">Imagen/Render de esta Unidad</label>
+                              <FileDropzone 
+                                onUploadSuccess={(url) => {
+                                  onUpdateUnit({
+                                    ...unit,
+                                    mainRender: url
+                                  });
+                                }}
+                                folder="units"
+                                label="Subir nueva foto"
+                                currentImage={unit.mainRender}
+                              />
+                            </div>
+                          )}
+                        </div>
                       )
                     })
                   )}
