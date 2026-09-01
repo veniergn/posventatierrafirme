@@ -45,7 +45,7 @@ export const OwnerPublicLogin: React.FC<OwnerPublicLoginProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#FAF9FB] flex flex-col md:flex-row animate-in fade-in zoom-in-95 duration-300">
+    <div className="w-full min-h-[80vh] bg-[#FAF9FB] flex flex-col md:flex-row animate-in fade-in zoom-in-95 duration-300 rounded-3xl overflow-hidden shadow-sm border border-[#E0E3E7]">
       {/* Left Column: Login Form */}
       <div className="w-full md:w-1/2 lg:w-5/12 p-8 sm:p-12 lg:p-16 flex flex-col justify-between bg-white shadow-xl z-10 overflow-y-auto">
         <div>

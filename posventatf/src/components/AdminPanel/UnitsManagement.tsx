@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { UnitDetail, Project, User } from '../../types';
+import { FileDropzone } from '../FileDropzone';
 import { 
   Building, 
   Plus, 
