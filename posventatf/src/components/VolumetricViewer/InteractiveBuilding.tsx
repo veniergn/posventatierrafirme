@@ -43,7 +43,7 @@ export const InteractiveBuilding: React.FC<InteractiveBuildingProps> = ({
           <img 
             src={volumetria.imagen_url} 
             alt={volumetria.nombre}
-            className="max-w-full max-h-[75vh] object-contain pointer-events-none opacity-90"
+            className="block max-w-full max-h-[75vh] object-contain pointer-events-none opacity-90"
           />
   
           <svg 

@@ -189,7 +189,7 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
               <img 
                 src={imgUrl} 
                 alt="Volumetria" 
-                className="max-w-full max-h-[75vh] object-contain pointer-events-none opacity-90"
+                className="block max-w-full max-h-[75vh] object-contain pointer-events-none opacity-90"
               />
               
               {/* SVG Overlay for Polygons */}
