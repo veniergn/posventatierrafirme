@@ -109,7 +109,7 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
     const pointsString = currentPolygon.map(p => `${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' ');
 
     const newMapping: UnidadMapeada = {
-      id: `map-${Date.now()}`,
+      id: crypto.randomUUID(),
       volumetria_id: volumetriaId,
       unidad_id: selectedUnitId,
       polygon_points: pointsString,

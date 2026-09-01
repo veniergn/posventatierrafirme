@@ -100,9 +100,9 @@ export const ProjectCommercialDetail: React.FC<ProjectCommercialDetailProps> = (
               </span>
             </div>
             <div>
-              <span className="text-[11px] text-[#5B5F63] block">Unidades Disponibles</span>
+              <span className="text-[11px] text-[#5B5F63] block">Unidades</span>
               <span className="text-sm font-extrabold text-[#005613]">
-                {project.totalUnits - project.unitsSold} de {project.totalUnits}
+                {project.totalUnits}
               </span>
             </div>
           </div>
