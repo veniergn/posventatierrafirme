@@ -51,7 +51,7 @@ export const InteractiveBuilding: React.FC<InteractiveBuildingProps> = ({
             viewBox="0 0 100 100"
             preserveAspectRatio="none"
           >
-            {mappedUnits.filter(m => m.volumetria_id === volumetria.id).map(mapping => {
+            {mappedUnits.filter(m => units.some(u => u.id === m.unidad_id)).map(mapping => {
               const points = mapping.polygon_points;
   
               const isHovered = hoveredUnit === mapping.id;

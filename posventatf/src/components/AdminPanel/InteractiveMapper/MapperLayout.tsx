@@ -46,13 +46,13 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const imgUrl = selectedProject?.image || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=2000";
 
-  // Filter mapped units to only show ones belonging to the selected project's volumetria
-  // We use `proj-${selectedProjectId}` as the volumetria_id by convention
-  const volumetriaId = `vol-${selectedProjectId}`;
-  const visibleMappedUnits = mappedUnits.filter(m => m.volumetria_id === volumetriaId);
-
   // Filter units available for mapping to only those in the selected project
   const availableUnits = units.filter(u => u.complexName === selectedProject?.name);
+  const availableUnitIds = availableUnits.map(u => u.id);
+
+  // Filter mapped units to only show ones belonging to the selected project's units
+  const volumetriaId = `vol-${selectedProjectId}`;
+  const visibleMappedUnits = mappedUnits.filter(m => availableUnitIds.includes(m.unidad_id));
 
   useEffect(() => {
     if (projects.length > 0 && !selectedProjectId) {

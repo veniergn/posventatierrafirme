@@ -161,7 +161,7 @@ export const ProjectCommercialDetail: React.FC<ProjectCommercialDetailProps> = (
             <InteractiveBuilding
               volumetria={volumetria}
               mappedUnits={mappedUnits}
-              units={units}
+              units={units.filter(u => u.complexName === project.name)}
               onSelectUnit={(unit) => setSelectedUnitDetail(unit)}
             />
           ) : (
