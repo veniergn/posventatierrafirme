@@ -192,6 +192,7 @@ export type ActiveAppView =
   | 'admin_multimedia' 
   | 'admin_contacts'
   | 'admin_mapper'
+  | 'admin_commercial'
   | 'preview_mode' 
   | 'owner_portal' 
   | 'owner_login' 

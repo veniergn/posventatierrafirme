@@ -108,6 +108,18 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             </button>
 
             <button
+              onClick={() => onNavigate('admin_commercial')}
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
+                currentView === 'admin_commercial'
+                  ? 'bg-[#8E1E19] text-white shadow-xs'
+                  : 'text-[#5B5F63] hover:text-[#1B1C1E] hover:bg-[#FAF9FB]'
+              }`}
+            >
+              <Users className="w-4 h-4" />
+              <span>Atención Comercial</span>
+            </button>
+
+            <button
               onClick={() => onNavigate('admin_mapper')}
               className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                 currentView === 'admin_mapper'

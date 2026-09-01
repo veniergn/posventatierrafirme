@@ -28,6 +28,7 @@ import { EditUserModal } from './components/AdminPanel/EditUserModal';
 import { ProjectsDashboard } from './components/AdminPanel/ProjectsDashboard';
 import { MultimediaManager } from './components/AdminPanel/MultimediaManager';
 import { ContactsManagement } from './components/AdminPanel/ContactsManagement';
+import { CommercialManagement } from './components/AdminPanel/CommercialManagement';
 import { MapperLayout } from './components/AdminPanel/InteractiveMapper/MapperLayout';
 import { AuditLogsModal } from './components/AdminPanel/AuditLogsModal';
 import { PreviewModeView } from './components/PreviewMode/PreviewModeView';
@@ -582,6 +583,13 @@ export default function App() {
                 onDeleteMappedUnit={handleDeleteMappedUnit}
                 onUpdateProjectDetails={handleUpdateProjectDetails}
                 onUpdateUnit={handleUpdateUnit}
+              />
+            )}
+
+            {currentView === 'admin_commercial' && (
+              <CommercialManagement
+                projects={projects}
+                onUpdateProjectDetails={handleUpdateProjectDetails}
               />
             )}
           </AdminLayout>
