@@ -17,7 +17,6 @@ export const InteractiveBuilding: React.FC<InteractiveBuildingProps> = ({
 }) => {
   const [hoveredUnit, setHoveredUnit] = useState<string | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<UnitDetail | null>(null);
-  const [imgSize, setImgSize] = useState({ width: 1000, height: 1000 });
 
   const handleUnitClick = (mapping: UnidadMapeada) => {
     const unit = units.find(u => u.id === mapping.unidad_id);
@@ -45,12 +44,11 @@ export const InteractiveBuilding: React.FC<InteractiveBuildingProps> = ({
             src={volumetria.imagen_url} 
             alt={volumetria.nombre}
             className="block max-w-full max-h-[75vh] pointer-events-none opacity-90"
-            onLoad={(e) => setImgSize({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })}
           />
   
           <svg 
             className="absolute inset-0 w-full h-full"
-            viewBox={`0 0 ${imgSize.width} ${imgSize.height}`}
+            viewBox="0 0 100 100"
             preserveAspectRatio="none"
           >
             {mappedUnits.filter(m => units.some(u => u.id === m.unidad_id)).map(mapping => {

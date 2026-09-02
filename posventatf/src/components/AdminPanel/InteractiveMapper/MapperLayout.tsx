@@ -40,7 +40,6 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
   const [hoveredPoly, setHoveredPoly] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState<Point | null>(null);
   const [selectedUnitForMedia, setSelectedUnitForMedia] = useState<UnitDetail | null>(null);
-  const [imgSize, setImgSize] = useState({ width: 1000, height: 1000 });
   
   const svgRef = useRef<SVGSVGElement>(null);
   
@@ -65,8 +64,8 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
     const svg = svgRef.current;
     if (!svg) return null;
     const rect = svg.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * imgSize.width;
-    const y = ((e.clientY - rect.top) / rect.height) * imgSize.height;
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
     return { x, y };
   };
 
@@ -191,18 +190,17 @@ export const MapperLayout: React.FC<MapperLayoutProps> = ({
                 src={imgUrl} 
                 alt="Volumetria" 
                 className="block max-w-full max-h-[75vh] pointer-events-none opacity-90"
-                onLoad={(e) => setImgSize({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })}
               />
               
               {/* SVG Overlay for Polygons */}
               <svg 
                 ref={svgRef}
                 className="absolute inset-0 w-full h-full"
-                viewBox={`0 0 ${imgSize.width} ${imgSize.height}`}
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
                 onClick={handleSvgClick}
                 onMouseMove={handleMouseMove}
                 onMouseLeave={handleMouseLeave}
-                preserveAspectRatio="none"
               >
               {/* Existing Mapped Units */}
               {visibleMappedUnits.map((mapping, index) => {
