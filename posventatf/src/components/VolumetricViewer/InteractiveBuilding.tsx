@@ -17,6 +17,7 @@ export const InteractiveBuilding: React.FC<InteractiveBuildingProps> = ({
 }) => {
   const [hoveredUnit, setHoveredUnit] = useState<string | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<UnitDetail | null>(null);
+  const [imgSize, setImgSize] = useState({ width: 1000, height: 1000 });
 
   const handleUnitClick = (mapping: UnidadMapeada) => {
     const unit = units.find(u => u.id === mapping.unidad_id);
@@ -38,17 +39,18 @@ export const InteractiveBuilding: React.FC<InteractiveBuildingProps> = ({
       </div>
 
       {/* Main Interactive Area */}
-      <div className="flex-1 relative w-full h-full overflow-hidden touch-pan-y bg-black flex items-center justify-center">
+      <div className={`flex-1 relative w-full overflow-hidden touch-pan-y bg-black flex items-center justify-center transition-all duration-500 ease-spring ${selectedUnit ? 'h-[40vh] mb-0' : 'h-full'}`}>
         <div className="relative inline-block max-w-full max-h-full">
           <img 
             src={volumetria.imagen_url} 
             alt={volumetria.nombre}
             className="block max-w-full max-h-[75vh] pointer-events-none opacity-90"
+            onLoad={(e) => setImgSize({ width: e.currentTarget.naturalWidth, height: e.currentTarget.naturalHeight })}
           />
   
           <svg 
             className="absolute inset-0 w-full h-full"
-            viewBox="0 0 100 100"
+            viewBox={`0 0 ${imgSize.width} ${imgSize.height}`}
             preserveAspectRatio="none"
           >
             {mappedUnits.filter(m => units.some(u => u.id === m.unidad_id)).map(mapping => {
