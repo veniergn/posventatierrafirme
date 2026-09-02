@@ -29,7 +29,7 @@ import { ProjectsDashboard } from './components/AdminPanel/ProjectsDashboard';
 import { MultimediaManager } from './components/AdminPanel/MultimediaManager';
 import { ContactsManagement } from './components/AdminPanel/ContactsManagement';
 import { CommercialManagement } from './components/AdminPanel/CommercialManagement';
-import { MapperLayout } from './components/AdminPanel/InteractiveMapper/MapperLayout';
+
 import { AuditLogsModal } from './components/AdminPanel/AuditLogsModal';
 import { PreviewModeView } from './components/PreviewMode/PreviewModeView';
 import { OwnerApp } from './components/OwnerPortal/OwnerApp';
@@ -39,8 +39,6 @@ import { EmailInboxView } from './components/EmailInboxView';
 import { EmailSimulatorModal } from './components/EmailSimulatorModal';
 import { SplashScreen } from './components/SplashScreen';
 import { InstallPWA } from './components/InstallPWA';
-import { UnidadMapeada } from './types';
-
 export default function App() {
   // Global State
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
@@ -51,7 +49,6 @@ export default function App() {
   const [uploads, setUploads] = useState<MediaUploadItem[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [contacts, setContacts] = useState<ContactItem[]>([]);
-  const [mappedUnits, setMappedUnits] = useState<UnidadMapeada[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [globalCoverImage, setGlobalCoverImage] = useState<string>('');
 
@@ -71,12 +68,11 @@ export default function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [cloudProjects, cloudUsers, cloudMilestones, cloudUnits, cloudMappedUnits, cloudContacts, cloudMedia] = await Promise.all([
+        const [cloudProjects, cloudUsers, cloudMilestones, cloudUnits, cloudContacts, cloudMedia] = await Promise.all([
           api.getProjects(),
           api.getUsers(),
           api.getMilestones(),
           api.getUnits(),
-          api.getUnidadesMapeadas(),
           api.getContacts(),
           api.getMediaUploads()
         ]);
@@ -85,7 +81,6 @@ export default function App() {
         if (cloudUsers) setUsers(cloudUsers);
         if (cloudMilestones) setMilestones(cloudMilestones);
         if (cloudUnits) setUnits(cloudUnits);
-        if (cloudMappedUnits) setMappedUnits(cloudMappedUnits);
         if (cloudContacts) setContacts(cloudContacts);
         if (cloudMedia) {
           setUploads(cloudMedia);
@@ -413,24 +408,7 @@ export default function App() {
     }
   };
 
-  // Handlers for Interactive Mappings
-  const handleSaveMappedUnit = async (mapping: UnidadMapeada) => {
-    setMappedUnits((prev) => [mapping, ...prev]);
-    try {
-      await api.createUnidadMapeada(mapping);
-    } catch (err) {
-      console.error('Error guardando en Supabase, guardado localmente:', err);
-    }
-  };
 
-  const handleDeleteMappedUnit = async (id: string) => {
-    setMappedUnits((prev) => prev.filter((m) => m.id !== id));
-    try {
-      await api.deleteUnidadMapeada(id);
-    } catch (err) {
-      console.error('Error eliminando en Supabase, eliminado localmente:', err);
-    }
-  };
 
   // Handlers for Project Updates
   const handleUpdateProjectProgress = (projectId: string, newProgress: number) => {
@@ -574,18 +552,6 @@ export default function App() {
               />
             )}
 
-            {currentView === 'admin_mapper' && (
-              <MapperLayout
-                units={units}
-                projects={projects}
-                mappedUnits={mappedUnits}
-                onSaveMappedUnit={handleSaveMappedUnit}
-                onDeleteMappedUnit={handleDeleteMappedUnit}
-                onUpdateProjectDetails={handleUpdateProjectDetails}
-                onUpdateUnit={handleUpdateUnit}
-              />
-            )}
-
             {currentView === 'admin_commercial' && (
               <CommercialManagement
                 projects={projects}
@@ -621,16 +587,7 @@ export default function App() {
               milestones={milestones}
               contacts={contacts}
               units={units}
-              mappedUnits={mappedUnits}
               globalCoverImage={globalCoverImage}
-              volumetria={{
-                id: 'vol-1',
-                nombre: 'Render Principal',
-                imagen_url: projects[0]?.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=2000',
-                width_original: 1920,
-                height_original: 1080,
-                estado: 'Activo'
-              }}
               isEmbeddedInSimulator={false}
               onAdminAccess={(staffUser) => {
                 if (staffUser) setActiveStaffUser(staffUser as User);

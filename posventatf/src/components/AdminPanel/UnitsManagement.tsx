@@ -654,6 +654,24 @@ export const UnitsManagement: React.FC<UnitsManagementProps> = ({
                       currentImage={formData.livingRender}
                     />
                   </div>
+
+                  <div>
+                    <label className="text-[11px] text-[#5B5F63] block mb-1">Render Dormitorio</label>
+                    <FileDropzone
+                      onUploadSuccess={(url) => setFormData({ ...formData, masterBedroomRender: url })}
+                      folder="units"
+                      currentImage={formData.masterBedroomRender}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] text-[#5B5F63] block mb-1">Render Cocina</label>
+                    <FileDropzone
+                      onUploadSuccess={(url) => setFormData({ ...formData, kitchenRender: url })}
+                      folder="units"
+                      currentImage={formData.kitchenRender}
+                    />
+                  </div>
                 </div>
               </div>
 

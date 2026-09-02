@@ -42,7 +42,7 @@ export const OwnerMyUnit: React.FC<OwnerMyUnitProps> = ({
     { title: 'Fachada & Balcón Aterrazado', url: unitDetail.mainRender, category: 'Exterior' },
     { title: 'Dormitorio Principal en Suite', url: unitDetail.masterBedroomRender, category: 'Dormitorio' },
     { title: 'Cocina & Acabados de Cuarzo', url: unitDetail.kitchenRender, category: 'Cocina' }
-  ];
+  ].filter(img => img.url && img.url.trim() !== '');
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">

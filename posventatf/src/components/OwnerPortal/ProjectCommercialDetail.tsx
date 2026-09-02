@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Project, User, ProjectTypology, ProjectAmenity, UnitDetail, UnidadMapeada, ObraVolumetria } from '../../types';
-import { InteractiveBuilding } from '../VolumetricViewer/InteractiveBuilding';
+import { Project, User, ProjectTypology, ProjectAmenity, UnitDetail } from '../../types';
+import { ProjectRendersCarousel } from './ProjectRendersCarousel';
 import { AdvisorContactModal } from './AdvisorContactModal';
 import { 
   ArrowLeft, 
@@ -26,8 +26,6 @@ interface ProjectCommercialDetailProps {
   project: Project;
   user: User;
   units?: UnitDetail[];
-  mappedUnits?: UnidadMapeada[];
-  volumetria?: ObraVolumetria;
   onBack: () => void;
   onExpandImage?: (url: string) => void;
 }
@@ -36,8 +34,6 @@ export const ProjectCommercialDetail: React.FC<ProjectCommercialDetailProps> = (
   project,
   user,
   units = [],
-  mappedUnits = [],
-  volumetria,
   onBack,
   onExpandImage
 }) => {
@@ -123,7 +119,7 @@ export const ProjectCommercialDetail: React.FC<ProjectCommercialDetailProps> = (
             }`}
           >
             <Box className="w-4 h-4" />
-            <span className="truncate">Volumetría Interactiva</span>
+            <span className="truncate">Renders del Proyecto</span>
           </button>
 
           <button
@@ -153,25 +149,11 @@ export const ProjectCommercialDetail: React.FC<ProjectCommercialDetailProps> = (
       </div>
 
       {/* ========================================================
-          TAB 1: VOLUMETRÍA Y RENDERS 3D
+          TAB 1: RENDERS DEL PROYECTO
       ======================================================== */}
       {activeTab === 'volumetria' && (
         <div className="space-y-6">
-          {volumetria ? (
-            <InteractiveBuilding
-              volumetria={volumetria}
-              mappedUnits={mappedUnits}
-              units={units.filter(u => u.complexName === project.name)}
-              onSelectUnit={(unit) => setSelectedUnitDetail(unit)}
-            />
-          ) : (
-            <div className="h-[50vh] bg-gray-100 rounded-2xl flex items-center justify-center border border-gray-200">
-              <p className="text-gray-500 font-semibold text-sm flex items-center gap-2">
-                <Box className="w-5 h-5" />
-                La volumetría interactiva no está disponible para este proyecto aún.
-              </p>
-            </div>
-          )}
+          <ProjectRendersCarousel project={project} />
 
           {/* Architectural Notes & Specs */}
           <div className="bg-white rounded-2xl p-6 border border-[#E0E3E7] shadow-xs space-y-4">

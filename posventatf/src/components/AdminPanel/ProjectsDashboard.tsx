@@ -678,7 +678,7 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="font-bold text-[#1B1C1E] block mb-1">Imagen de Portada / Render</label>
+                  <label className="font-bold text-[#1B1C1E] block mb-1">Imagen de Portada Principal</label>
                   <FileDropzone 
                     onUploadSuccess={(url) => setEditingProjectModal({ ...editingProjectModal, image: url })}
                     folder="projects"
@@ -686,6 +686,44 @@ export const ProjectsDashboard: React.FC<ProjectsDashboardProps> = ({
                     currentImage={editingProjectModal.image}
                   />
                 </div>
+              </div>
+
+              <div className="pt-4 mt-4 border-t border-[#E0E3E7]">
+                <label className="font-bold text-[#1B1C1E] block mb-2">Galería de Renders del Proyecto (Carrusel)</label>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-3">
+                  {editingProjectModal.volumetricRenders?.map((r) => (
+                    <div key={r.id} className="relative bg-gray-100 rounded-xl overflow-hidden border border-[#E0E3E7] group">
+                      <img src={r.url} className="w-full h-20 object-cover" alt={r.title} />
+                      <button 
+                        type="button" 
+                        onClick={() => setEditingProjectModal({
+                          ...editingProjectModal, 
+                          volumetricRenders: editingProjectModal.volumetricRenders?.filter(render => render.id !== r.id)
+                        })} 
+                        className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                        title="Eliminar render"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <FileDropzone 
+                  onUploadSuccess={(url) => {
+                    const newRender = { 
+                      id: `r-${Date.now()}`, 
+                      title: `Render ${editingProjectModal.volumetricRenders?.length ? editingProjectModal.volumetricRenders.length + 1 : 1}`, 
+                      url, 
+                      category: 'volumetria' 
+                    };
+                    setEditingProjectModal({ 
+                      ...editingProjectModal, 
+                      volumetricRenders: [...(editingProjectModal.volumetricRenders || []), newRender] 
+                    });
+                  }}
+                  folder="projects"
+                  label="Añadir nuevo render a la galería"
+                />
               </div>
 
               <div className="pt-2 flex justify-end gap-2">

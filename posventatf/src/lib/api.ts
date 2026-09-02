@@ -201,61 +201,7 @@ export const api = {
     }
   },
 
-  // ==========================================
-  // MAPEO 2D (VOLUMETRÍAS Y UNIDADES)
-  // ==========================================
-  async getObrasVolumetria(): Promise<ObraVolumetria[] | null> {
-    try {
-      const { data, error } = await supabase.from('obras_volumetria').select('*');
-      if (error) throw error;
-      return data as ObraVolumetria[];
-    } catch (err) {
-      console.error('Error fetching obras_volumetria:', err);
-      return null;
-    }
-  },
-  async getUnidadesMapeadas(): Promise<UnidadMapeada[] | null> {
-    try {
-      const { data, error } = await supabase.from('unidades_mapeadas').select('*');
-      if (error) throw error;
-      return data as UnidadMapeada[];
-    } catch (err) {
-      console.error('Error fetching unidades_mapeadas:', err);
-      return null;
-    }
-  },
-  async createUnidadMapeada(mapping: UnidadMapeada) {
-    const projectId = mapping.volumetria_id.replace('vol-', '');
-    // Check if a dummy volumetria exists for this project to satisfy foreign key constraint
-    let { data: vol } = await supabase.from('obras_volumetria').select('id').eq('nombre', projectId).maybeSingle();
-    
-    if (!vol) {
-      // Create a dummy volumetria record to satisfy foreign key
-      const newVolId = crypto.randomUUID();
-      const { data: newVol, error: volErr } = await supabase.from('obras_volumetria').insert({
-        id: newVolId,
-        nombre: projectId,
-        imagen_url: 'placeholder',
-        width_original: 100,
-        height_original: 100,
-        estado: 'Activo'
-      }).select().single();
-      
-      if (volErr) throw volErr;
-      vol = newVol;
-    }
 
-    // Assign the valid UUID foreign key
-    const mappingToSave = { ...mapping, volumetria_id: vol.id };
-
-    const { data, error } = await supabase.from('unidades_mapeadas').insert(mappingToSave).select().single();
-    if (error) throw error;
-    return data;
-  },
-  async deleteUnidadMapeada(id: string) {
-    const { error } = await supabase.from('unidades_mapeadas').delete().eq('id', id);
-    if (error) throw error;
-  },
 
   // ==========================================
   // OWNER AUTHENTICATION

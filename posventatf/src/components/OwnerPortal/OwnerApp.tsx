@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Project, ConstructionMilestone, ContactItem, UnitDetail, UnidadMapeada, ObraVolumetria } from '../../types';
+import { User, Project, ConstructionMilestone, ContactItem, UnitDetail } from '../../types';
 import { OwnerHome } from './OwnerHome';
 import { OwnerMyUnit } from './OwnerMyUnit';
 import { OwnerProjectsCatalog } from './OwnerProjectsCatalog';
@@ -21,8 +21,6 @@ interface OwnerAppProps {
   milestones: ConstructionMilestone[];
   contacts?: ContactItem[];
   units?: UnitDetail[];
-  mappedUnits?: UnidadMapeada[];
-  volumetria?: ObraVolumetria;
   isEmbeddedInSimulator?: boolean;
   globalCoverImage?: string;
   onAdminAccess?: (user?: User) => void;
@@ -36,8 +34,6 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
   milestones,
   contacts,
   units = [],
-  mappedUnits = [],
-  volumetria,
   isEmbeddedInSimulator = false,
   globalCoverImage,
   onAdminAccess,
@@ -102,15 +98,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
             project={selectedProjectForDetail}
             user={user || ({} as User)}
             units={units}
-            mappedUnits={mappedUnits}
-            volumetria={{
-              id: `vol-${selectedProjectForDetail.id}`,
-              nombre: 'Volumetría ' + selectedProjectForDetail.name,
-              imagen_url: selectedProjectForDetail.image || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=2000',
-              width_original: 1920,
-              height_original: 1080,
-              estado: 'Activo'
-            }}
+
             onBack={handleBackFromDetail}
             onExpandImage={(url) => setFullscreenPhoto(url)}
           />
