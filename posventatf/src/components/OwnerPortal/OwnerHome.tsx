@@ -4,6 +4,7 @@ import { INITIAL_UNIT_DETAILS } from '../../data/initialData';
 
 interface OwnerHomeProps {
   user: User | null;
+  units?: UnitDetail[];
   projects: Project[];
   milestones: ConstructionMilestone[];
   onNavigateToMyUnit: () => void;
@@ -14,16 +15,21 @@ interface OwnerHomeProps {
 
 export const OwnerHome: React.FC<OwnerHomeProps> = ({
   user,
+  units = [],
   projects,
   onNavigateToMyUnit,
   onSelectProjectDetail,
   globalCoverImage
 }) => {
-  // Find current user's project
-  const userProject = projects.find(
-    (p) => p.name.toLowerCase().includes((user?.complex || '').toLowerCase()) ||
-           (user?.complex || '').toLowerCase().includes(p.name.toLowerCase())
-  ) || projects[0];
+  // Encontrar la unidad del usuario en la base de datos
+  const dbUnit = units.find((u) => u.assignedUserId === user?.id);
+  
+  // Find current user's project: by unit's projectId first, then fallback to complex name matching, then first project
+  const userProject = projects.find(p => p.id === dbUnit?.projectId) || 
+                      projects.find(
+                        (p) => p.name.toLowerCase().includes((user?.complex || '').toLowerCase()) ||
+                               (user?.complex || '').toLowerCase().includes(p.name.toLowerCase())
+                      ) || projects[0];
 
   const mainImage = globalCoverImage || userProject?.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80';
 

@@ -107,6 +107,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
             {activeTab === 'inicio' && (
               <OwnerHome
                 user={user}
+                units={units}
                 projects={projects}
                 milestones={milestones}
                 onNavigateToMyUnit={() => handleTabChange('unidad')}
@@ -129,6 +130,7 @@ export const OwnerApp: React.FC<OwnerAppProps> = ({
               ) : (
                 <OwnerMyUnit
                   user={user}
+                  units={units}
                   milestones={milestones}
                   onExpandImage={(url) => setFullscreenPhoto(url)}
                 />

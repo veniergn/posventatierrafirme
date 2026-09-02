@@ -20,12 +20,14 @@ import {
 
 interface OwnerMyUnitProps {
   user: User;
+  units?: UnitDetail[];
   milestones: ConstructionMilestone[];
   onExpandImage?: (url: string) => void;
 }
 
 export const OwnerMyUnit: React.FC<OwnerMyUnitProps> = ({
   user,
+  units = [],
   milestones,
   onExpandImage
 }) => {
@@ -34,8 +36,14 @@ export const OwnerMyUnit: React.FC<OwnerMyUnitProps> = ({
   const [blueprintZoom, setBlueprintZoom] = useState<number>(100);
   const [downloadModalDoc, setDownloadModalDoc] = useState<string | null>(null);
 
+  // Intentar encontrar la unidad vinculada al usuario desde la base de datos
+  const dbUnit = units.find(u => u.assignedUserId === user.id);
+  
+  // Fallback a los datos locales por defecto si no se encuentra
   const assignedUnitKey = user.unit || 'Unidad 4° B';
-  const unitDetail: UnitDetail = INITIAL_UNIT_DETAILS[assignedUnitKey] || INITIAL_UNIT_DETAILS['Unidad 4° B'];
+  const fallbackUnit = INITIAL_UNIT_DETAILS[assignedUnitKey] || INITIAL_UNIT_DETAILS['Unidad 4° B'];
+  
+  const unitDetail: UnitDetail = dbUnit || fallbackUnit;
 
   const galleryImages = [
     { title: 'Living & Comedor Integrado', url: unitDetail.livingRender, category: 'Interiorismo' },
@@ -279,7 +287,7 @@ export const OwnerMyUnit: React.FC<OwnerMyUnitProps> = ({
       {subTab === 'avance' && (
         <div className="space-y-6">
           <div className="space-y-6 relative before:absolute before:inset-0 before:left-4 before:w-0.5 before:bg-[#E0E3E7]">
-            {milestones.map((m, idx) => (
+            {milestones.filter(m => m.projectId === unitDetail.projectId).map((m, idx) => (
               <div key={m.id} className="relative pl-10">
                 {/* Dot */}
                 <div className={`absolute left-2.5 top-1.5 -translate-x-1/2 w-4 h-4 rounded-full border-2 bg-white ${
@@ -375,10 +383,10 @@ export const OwnerMyUnit: React.FC<OwnerMyUnitProps> = ({
             </h3>
             <div className="divide-y divide-[#E0E3E7]">
               {[
-                { name: 'Plano Arquitectónico Oficial (PDF)', size: '3.4 MB', type: 'Arquitectura' },
-                { name: 'Instalaciones Eléctricas y Domótica (PDF)', size: '2.1 MB', type: 'Ingeniería' },
-                { name: 'Instalaciones Hidrosanitarias (PDF)', size: '1.8 MB', type: 'Sanitaria' },
-                { name: 'Boleto de Compraventa y Certificado de Dominio', size: '4.5 MB', type: 'Legal' }
+                { name: 'Plano Arquitectónico Oficial (PDF)', size: '3.4 MB', type: 'Arquitectura', url: unitDetail.blueprintPdfUrl },
+                { name: 'Instalaciones Eléctricas y Domótica (PDF)', size: '2.1 MB', type: 'Ingeniería', url: unitDetail.electricalPdfUrl },
+                { name: 'Instalaciones Hidrosanitarias (PDF)', size: '1.8 MB', type: 'Sanitaria', url: unitDetail.hydraulicPdfUrl },
+                { name: 'Boleto de Compraventa y Certificado de Dominio', size: '4.5 MB', type: 'Legal', url: unitDetail.deedPdfUrl }
               ].map((doc, idx) => (
                 <div key={idx} className="py-3 flex items-center justify-between text-xs">
                   <div className="flex items-center gap-3">
@@ -389,7 +397,13 @@ export const OwnerMyUnit: React.FC<OwnerMyUnitProps> = ({
                     </div>
                   </div>
                   <button
-                    onClick={() => setDownloadModalDoc(doc.name)}
+                    onClick={() => {
+                      if (doc.url && doc.url !== '#' && !doc.url.startsWith('#')) {
+                        window.open(doc.url, '_blank', 'noopener,noreferrer');
+                      } else {
+                        setDownloadModalDoc(doc.name);
+                      }
+                    }}
                     className="px-3.5 py-1.5 bg-[#FAF9FB] hover:bg-[#FFDAD5]/50 text-[#8E1E19] font-bold rounded-lg border border-[#E0BFBB] flex items-center gap-1.5 transition-colors"
                   >
                     <Download className="w-3.5 h-3.5" />
