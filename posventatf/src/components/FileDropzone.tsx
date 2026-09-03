@@ -13,14 +13,17 @@ interface FileDropzoneProps {
 export const FileDropzone: React.FC<FileDropzoneProps> = ({ 
   onUploadSuccess, 
   folder = 'general',
-  accept = "image/*",
-  label = "Arrastra una imagen aquí o haz clic para subir",
+  accept = "image/*,application/pdf",
+  label = "Arrastra un archivo aquí o haz clic para subir",
   currentImage
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(currentImage || null);
+  const [fileType, setFileType] = useState<string | null>(
+    currentImage?.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'image/jpeg'
+  );
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleDrag = useCallback((e: React.DragEvent) => {
@@ -53,6 +56,7 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
   const processFile = async (file: File) => {
     setError(null);
     setIsUploading(true);
+    setFileType(file.type);
 
     try {
       // Local preview
@@ -64,8 +68,9 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
       onUploadSuccess(url);
     } catch (err) {
       console.error(err);
-      setError("Error al subir el archivo. Verifica tu conexión o intenta con una imagen más pequeña.");
+      setError("Error al subir el archivo. Verifica tu conexión o intenta con uno más pequeño.");
       setPreview(currentImage || null);
+      setFileType(currentImage?.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'image/jpeg');
     } finally {
       setIsUploading(false);
     }
@@ -74,8 +79,11 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
   const clearImage = (e: React.MouseEvent) => {
     e.stopPropagation();
     setPreview(null);
+    setFileType(null);
     onUploadSuccess('');
   };
+
+  const isPdf = fileType === 'application/pdf' || preview?.toLowerCase().includes('.pdf');
 
   return (
     <div className="w-full">
@@ -106,16 +114,22 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
           </div>
         ) : preview ? (
           <div className="relative w-full flex flex-col items-center group">
-            {preview.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) || preview.startsWith('blob:') || preview.includes('unsplash') ? (
+            {isPdf ? (
+              <div className="flex flex-col items-center text-gray-500 py-4">
+                <FileIcon className="w-12 h-12 mb-2 text-[#8E1E19]" />
+                <p className="text-sm font-bold text-center">Documento PDF</p>
+                <p className="text-xs truncate max-w-xs text-center px-2">{preview.startsWith('blob:') ? 'Documento cargado' : preview.split('/').pop()?.split('?')[0]}</p>
+              </div>
+            ) : (preview.match(/\.(jpeg|jpg|gif|png|webp|svg)/i) || preview.startsWith('blob:') || preview.includes('unsplash')) ? (
               <img 
                 src={preview} 
                 alt="Preview" 
                 className="max-h-40 object-contain rounded-lg shadow-sm"
               />
             ) : (
-              <div className="flex flex-col items-center text-gray-500">
-                <FileIcon className="w-12 h-12 mb-2" />
-                <p className="text-sm truncate max-w-xs">{preview.split('/').pop()}</p>
+              <div className="flex flex-col items-center text-gray-500 py-4">
+                <FileIcon className="w-12 h-12 mb-2 text-[#8E1E19]" />
+                <p className="text-xs truncate max-w-xs">{preview.split('/').pop()}</p>
               </div>
             )}
             
@@ -127,7 +141,7 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
             <button
               onClick={clearImage}
               className="absolute -top-3 -right-3 bg-white text-gray-500 hover:text-red-500 border border-gray-200 rounded-full p-1 shadow-md transition-colors z-10"
-              title="Eliminar imagen"
+              title="Eliminar archivo"
             >
               <X className="w-4 h-4" />
             </button>
@@ -136,7 +150,7 @@ export const FileDropzone: React.FC<FileDropzoneProps> = ({
           <div className="flex flex-col items-center text-gray-500">
             <UploadCloud className="w-10 h-10 mb-3 text-gray-400" />
             <p className="text-sm font-semibold text-gray-700 text-center px-4">{label}</p>
-            <p className="text-xs text-gray-400 mt-2">Formatos permitidos: JPG, PNG, WEBP (Max 5MB)</p>
+            <p className="text-xs text-gray-400 mt-2">Formatos: JPG, PNG, WEBP, PDF (Max 5MB)</p>
           </div>
         )}
       </div>

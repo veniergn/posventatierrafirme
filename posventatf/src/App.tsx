@@ -411,27 +411,43 @@ export default function App() {
 
 
   // Handlers for Project Updates
-  const handleUpdateProjectProgress = (projectId: string, newProgress: number) => {
-    setProjects((prev) =>
-      prev.map((p) => (p.id === projectId ? { ...p, progress: newProgress } : p))
-    );
-    const p = projects.find((x) => x.id === projectId);
-    logAction(
-      'Ajuste de Avance de Obra',
-      `Modificó porcentaje de ${p?.name || 'Proyecto'} a ${newProgress}%`,
-      'project'
-    );
+  const handleUpdateProjectProgress = async (projectId: string, newProgress: number) => {
+    try {
+      const p = projects.find((x) => x.id === projectId);
+      if (!p) return;
+      const updatedProject = { ...p, progress: newProgress };
+      const savedProject = await api.updateProject(updatedProject);
+      
+      setProjects((prev) =>
+        prev.map((proj) => (proj.id === savedProject.id ? savedProject : proj))
+      );
+      
+      logAction(
+        'Ajuste de Avance de Obra',
+        `Modificó porcentaje de ${p.name} a ${newProgress}%`,
+        'project'
+      );
+    } catch (err) {
+      console.error('Error al actualizar progreso del proyecto:', err);
+      alert('Hubo un error al actualizar el progreso del proyecto.');
+    }
   };
 
-  const handleUpdateProjectDetails = (updatedProject: Project) => {
-    setProjects((prev) =>
-      prev.map((p) => (p.id === updatedProject.id ? updatedProject : p))
-    );
-    logAction(
-      'Actualización Comercial de Proyecto',
-      `Modificó parámetros comerciales / asesor de ${updatedProject.name}`,
-      'project'
-    );
+  const handleUpdateProjectDetails = async (updatedProject: Project) => {
+    try {
+      const savedProject = await api.updateProject(updatedProject);
+      setProjects((prev) =>
+        prev.map((p) => (p.id === savedProject.id ? savedProject : p))
+      );
+      logAction(
+        'Actualización Comercial de Proyecto',
+        `Modificó parámetros comerciales / asesor de ${savedProject.name}`,
+        'project'
+      );
+    } catch (err) {
+      console.error('Error al actualizar detalles del proyecto:', err);
+      alert('Hubo un error al actualizar los detalles del proyecto.');
+    }
   };
 
   // Handlers for Activation Flow

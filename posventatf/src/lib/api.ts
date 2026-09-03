@@ -93,28 +93,67 @@ export const api = {
     try {
       const { data, error } = await supabase.from('units').select('*');
       if (error) throw error;
-      return (data || []).map((u: any) => ({
-        ...u,
-        unitNumber: u.unitnumber || u.unitNumber
-      })) as UnitDetail[];
+      return (data || []).map((u: any) => {
+        let parsedGallery = [];
+        // Attempt to parse unitGallery from mainRender if it looks like JSON array
+        if (u.mainRender && u.mainRender.startsWith('[') && u.mainRender.endsWith(']')) {
+          try {
+            parsedGallery = JSON.parse(u.mainRender);
+          } catch (e) {
+            // fallback
+          }
+        }
+        return {
+          ...u,
+          unitNumber: u.unitnumber || u.unitNumber,
+          unitGallery: parsedGallery.length > 0 ? parsedGallery : []
+        };
+      }) as UnitDetail[];
     } catch (err) {
       console.error('Error fetching units from Supabase:', err);
       return null;
     }
   },
   async createUnit(unit: UnitDetail) {
-    const { unitNumber, ...rest } = unit;
-    const dbUnit = { ...rest, unitnumber: unitNumber };
+    const { unitNumber, unitGallery, ...rest } = unit;
+    
+    let mainRenderPayload = rest.mainRender;
+    if (unitGallery && unitGallery.length > 0) {
+      mainRenderPayload = JSON.stringify(unitGallery);
+    }
+
+    const dbUnit = { ...rest, unitnumber: unitNumber, mainRender: mainRenderPayload };
     const { data, error } = await supabase.from('units').insert(dbUnit).select().single();
     if (error) throw error;
-    return { ...data, unitNumber: data.unitnumber || data.unitNumber };
+    
+    let parsedGallery = [];
+    if (data.mainRender && data.mainRender.startsWith('[') && data.mainRender.endsWith(']')) {
+      try { parsedGallery = JSON.parse(data.mainRender); } catch (e) {}
+    }
+    
+    return { ...data, unitNumber: data.unitnumber || data.unitNumber, unitGallery: parsedGallery };
   },
   async updateUnit(unit: UnitDetail) {
-    const { unitNumber, ...rest } = unit;
-    const dbUnit = { ...rest, unitnumber: unitNumber };
+    const { unitNumber, unitGallery, ...rest } = unit;
+    
+    let mainRenderPayload = rest.mainRender;
+    if (unitGallery && unitGallery.length > 0) {
+      mainRenderPayload = JSON.stringify(unitGallery);
+    } else if (unitGallery && unitGallery.length === 0) {
+      // Clear gallery if empty array
+      mainRenderPayload = JSON.stringify([]);
+    }
+
+    const dbUnit = { ...rest, unitnumber: unitNumber, mainRender: mainRenderPayload };
     const { data, error } = await supabase.from('units').update(dbUnit).eq('id', unit.id).select().single();
     if (error) throw error;
-    return { ...data, unitNumber: data.unitnumber || data.unitNumber };
+    
+    let parsedGallery = [];
+    if (data.mainRender && data.mainRender.startsWith('[') && data.mainRender.endsWith(']')) {
+      try { parsedGallery = JSON.parse(data.mainRender); } catch (e) {}
+    }
+    
+    return { ...data, unitNumber: data.unitnumber || data.unitNumber, unitGallery: parsedGallery };
   },
   async deleteUnit(unitId: string) {
     const { error } = await supabase.from('units').delete().eq('id', unitId);

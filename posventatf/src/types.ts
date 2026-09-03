@@ -120,14 +120,15 @@ export interface UnitDetail {
   assignedUserId?: string;
   assignedUserName?: string;
   assignedUserEmail?: string;
-  mainRender: string;
-  livingRender: string;
-  masterBedroomRender: string;
-  kitchenRender: string;
-  blueprintPdfUrl: string;
-  electricalPdfUrl: string;
-  hydraulicPdfUrl: string;
-  deedPdfUrl: string;
+  unitGallery?: { id: string; url: string; title: string; category: string }[];
+  mainRender?: string;
+  livingRender?: string;
+  masterBedroomRender?: string;
+  kitchenRender?: string;
+  blueprintPdfUrl?: string;
+  electricalPdfUrl?: string;
+  hydraulicPdfUrl?: string;
+  deedPdfUrl?: string;
 }
 
 export interface MediaUploadItem {

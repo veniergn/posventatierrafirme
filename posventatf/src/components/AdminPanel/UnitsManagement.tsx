@@ -53,6 +53,7 @@ export const UnitsManagement: React.FC<UnitsManagementProps> = ({
   const [editingUnit, setEditingUnit] = useState<UnitDetail | null>(null);
   const [deletingUnit, setDeletingUnit] = useState<UnitDetail | null>(null);
   const [viewingUnitDetail, setViewingUnitDetail] = useState<UnitDetail | null>(null);
+  const [selectedUploadCategory, setSelectedUploadCategory] = useState<string>('Principal');
 
   // Form State for Add / Edit
   const [formData, setFormData] = useState<Partial<UnitDetail>>({
@@ -166,6 +167,7 @@ export const UnitsManagement: React.FC<UnitsManagementProps> = ({
       assignedUserId: assignedUser?.id,
       assignedUserName: assignedUser ? assignedUser.name : 'Disponible',
       assignedUserEmail: assignedUser?.email,
+      unitGallery: formData.unitGallery || [],
       mainRender: formData.mainRender || 'https://lh3.googleusercontent.com/aida-public/AB6AXuC7Dg5-GoB6fJxtvSnd4FBKz6U5WEwu_1v1CWDnnwmcS4_Rww1AvyLXO5vB8z0PaSOsVUZrc5RK4pgeTQEwwOVlNm-KRso8Or1-ydLLhMSUPQmkrCF5QsAm3lGLuU8mjgE-S9TIBGYog8exCNoyW1kJqhmVYoCrIUhb9K47zAB7gnvSJ3kF2Yv1JesulYLzqF83qlBeBtbuKDqbH0Wznri32nprrfd9Sz3TCCbeErekaEkN2az8CodAyQ',
       livingRender: formData.livingRender || 'https://lh3.googleusercontent.com/aida-public/AB6AXuATl4nmeyMNVmef3ekZT525cWqAgZi0ezmd_hiElShr58TVq-lWiQIuEeJlX-Li4vyawMmT-2hxRHmK3XaxKSpDmXT602nJsmcXimxanJDW6tyLHThhDDZ4V2_sDzudBVgp4AqWlBlG-nDj-2DQ5XPiqxDdswsFUIUYu0oHIXq7V6DJeZ_W5L9hEG1ObR1ZFxHe5AJ10VFZgkdNMpasSp87xZI6CUT0FVtd1UxHSxg15-OSasP0SwadZQ',
       masterBedroomRender: formData.masterBedroomRender || 'https://lh3.googleusercontent.com/aida-public/AB6AXuAcsLOpHMxnDQlp2HsHkfw91PLU8vDJlDejjLWrf5zs0mkOGXAroStcYaw1bfYej9nAXPG-hTGGkvE13ghzCTn3-Op1Y67nu2_lWDpMFEQz2JX-kqyNjk7vRgq2adAscn36sxv4Tg9xfxOAXScDrXOgexiiJFKMrqaqKDGw4YIZqoPwrq-BROUkQVK5igq8BveOv-3oVr2fVK98BonVs80v2hUBTtVg6VEeE2ey8y1devVu_aFHSIuApw',
@@ -201,6 +203,7 @@ export const UnitsManagement: React.FC<UnitsManagementProps> = ({
       assignedUserId: assignedUser?.id || (formData.assignedUserId === '' ? undefined : editingUnit.assignedUserId),
       assignedUserName: assignedUser ? assignedUser.name : (formData.assignedUserId === '' ? 'Disponible' : editingUnit.assignedUserName),
       assignedUserEmail: assignedUser?.email || (formData.assignedUserId === '' ? undefined : editingUnit.assignedUserEmail),
+      unitGallery: formData.unitGallery || editingUnit.unitGallery || [],
       mainRender: formData.mainRender || editingUnit.mainRender,
       livingRender: formData.livingRender || editingUnit.livingRender,
       masterBedroomRender: formData.masterBedroomRender || editingUnit.masterBedroomRender,
@@ -635,41 +638,63 @@ export const UnitsManagement: React.FC<UnitsManagementProps> = ({
 
               {/* Renders URL & Upload Section */}
               <div className="pt-2 border-t border-[#E0E3E7] space-y-3">
-                <span className="font-bold text-[#1B1C1E] block">Renders de Arquitectura & Vistas</span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-[11px] text-[#5B5F63] block mb-1">Render Principal / Fachada</label>
-                    <FileDropzone
-                      onUploadSuccess={(url) => setFormData({ ...formData, mainRender: url })}
-                      folder="units"
-                      currentImage={formData.mainRender}
-                    />
-                  </div>
+                <span className="font-bold text-[#1B1C1E] block">Galería de Renders & Vistas (Múltiples)</span>
+                
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-3">
+                  {formData.unitGallery?.map((r) => (
+                    <div key={r.id} className="relative bg-gray-100 rounded-xl overflow-hidden border border-[#E0E3E7] group">
+                      <img src={r.url} className="w-full h-20 object-cover" alt={r.title} />
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[10px] p-1 font-bold text-center">
+                        {r.category}
+                      </div>
+                      <button 
+                        type="button" 
+                        onClick={() => setFormData({
+                          ...formData, 
+                          unitGallery: formData.unitGallery?.filter(render => render.id !== r.id)
+                        })} 
+                        className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                        title="Eliminar render"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
 
-                  <div>
-                    <label className="text-[11px] text-[#5B5F63] block mb-1">Render Living / Estar</label>
-                    <FileDropzone
-                      onUploadSuccess={(url) => setFormData({ ...formData, livingRender: url })}
-                      folder="units"
-                      currentImage={formData.livingRender}
-                    />
+                <div className="flex flex-col sm:flex-row gap-3 items-start">
+                  <div className="w-full sm:w-1/3">
+                    <label className="text-[11px] text-[#5B5F63] block mb-1">Seleccionar Categoría</label>
+                    <select
+                      value={selectedUploadCategory}
+                      onChange={(e) => setSelectedUploadCategory(e.target.value)}
+                      className="w-full text-sm bg-[#FAF9FB] border border-[#E0E3E7] text-[#1B1C1E] rounded-xl px-3 py-2 outline-none focus:border-[#8E1E19]"
+                    >
+                      <option value="Principal">Principal / Fachada</option>
+                      <option value="Living">Living / Estar</option>
+                      <option value="Dormitorio">Dormitorio</option>
+                      <option value="Cocina">Cocina</option>
+                      <option value="Baños">Baños</option>
+                    </select>
                   </div>
-
-                  <div>
-                    <label className="text-[11px] text-[#5B5F63] block mb-1">Render Dormitorio</label>
+                  <div className="w-full sm:w-2/3">
+                    <label className="text-[11px] text-[#5B5F63] block mb-1">Subir Imagen</label>
                     <FileDropzone
-                      onUploadSuccess={(url) => setFormData({ ...formData, masterBedroomRender: url })}
+                      onUploadSuccess={(url) => {
+                        if (!url) return;
+                        const newRender = { 
+                          id: `ur-${Date.now()}`, 
+                          title: `Render ${selectedUploadCategory}`, 
+                          url, 
+                          category: selectedUploadCategory 
+                        };
+                        setFormData({ 
+                          ...formData, 
+                          unitGallery: [...(formData.unitGallery || []), newRender] 
+                        });
+                      }}
                       folder="units"
-                      currentImage={formData.masterBedroomRender}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-[11px] text-[#5B5F63] block mb-1">Render Cocina</label>
-                    <FileDropzone
-                      onUploadSuccess={(url) => setFormData({ ...formData, kitchenRender: url })}
-                      folder="units"
-                      currentImage={formData.kitchenRender}
+                      label={`Añadir imagen a ${selectedUploadCategory}`}
                     />
                   </div>
                 </div>

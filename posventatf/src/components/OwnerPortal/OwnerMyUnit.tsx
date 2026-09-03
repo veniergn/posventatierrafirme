@@ -45,12 +45,26 @@ export const OwnerMyUnit: React.FC<OwnerMyUnitProps> = ({
   
   const unitDetail: UnitDetail = dbUnit || fallbackUnit;
 
-  const galleryImages = [
-    { title: 'Living & Comedor Integrado', url: unitDetail.livingRender, category: 'Interiorismo' },
-    { title: 'Fachada & Balcón Aterrazado', url: unitDetail.mainRender, category: 'Exterior' },
-    { title: 'Dormitorio Principal en Suite', url: unitDetail.masterBedroomRender, category: 'Dormitorio' },
-    { title: 'Cocina & Acabados de Cuarzo', url: unitDetail.kitchenRender, category: 'Cocina' }
-  ].filter(img => img.url && img.url.trim() !== '');
+  let galleryImages = (unitDetail.unitGallery || []).map(r => ({
+    title: r.title,
+    url: r.url,
+    category: r.category
+  })).filter(img => img.url && img.url.trim() !== '');
+
+  if (galleryImages.length === 0) {
+    // Fallback para unidades antiguas
+    galleryImages = [
+      { title: 'Living & Comedor Integrado', url: unitDetail.livingRender, category: 'Interiorismo' },
+      { title: 'Fachada & Balcón Aterrazado', url: unitDetail.mainRender, category: 'Exterior' },
+      { title: 'Dormitorio Principal en Suite', url: unitDetail.masterBedroomRender, category: 'Dormitorio' },
+      { title: 'Cocina & Acabados de Cuarzo', url: unitDetail.kitchenRender, category: 'Cocina' }
+    ].filter(img => img.url && img.url.trim() !== '');
+  }
+
+  // Prevención de cuelgues si no hay ninguna foto en absoluto
+  if (galleryImages.length === 0) {
+    galleryImages = [{ title: 'Sin Imágenes', url: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1000&q=80', category: 'General' }];
+  }
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
